@@ -5,7 +5,7 @@ NOTE: This tool just got released and still under testing. Thanks to report if y
 ## Usage
 Download the latest release, extract the zipped ERModsMerger.exe, launch it and let it guide you through the process.
 
-If you use [ModEngine2](https://github.com/soulsmods/ModEngine2) place ERModsMerger.exe in the same folder and edit config_eldenring.toml as follow:
+Optional: If you use [ModEngine2](https://github.com/soulsmods/ModEngine2) place ERModsMerger.exe in the same folder and edit config_eldenring.toml as follow:
 ```
 mods = [
     { enabled = true, name = "default", path = "MergedMods" }
