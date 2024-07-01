@@ -164,7 +164,7 @@ namespace ERModsMerger.Core
         {
             _paramdefs = new Dictionary<string, PARAMDEF>();
             //Load paramdefs
-            var files = Directory.GetFiles("Config\\ParamDefs", "*.xml");
+            var files = Directory.GetFiles("ERModsMergerConfig\\ParamDefs", "*.xml");
 
             foreach (var f in files)
             {
