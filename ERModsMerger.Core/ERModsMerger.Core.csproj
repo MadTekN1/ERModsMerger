@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<GenerateAssemblyInfo>True</GenerateAssemblyInfo>
+		<DebugType>None</DebugType>
+		<DebugSymbols>false</DebugSymbols>
+	</PropertyGroup>
+
+
+	<ItemGroup>
+		<EmbeddedResource  CopyToOutputDirectory="never" Include="..\Assets\ParamDefs\**" Link="ERModsMergerConfig\ParamDefs\%(RecursiveDir)%(Filename)%(Extension)" />
+	</ItemGroup>
+
+	
+
+	<ItemGroup>
+	  <ProjectReference Include="..\SoulsFormats\SoulsFormats.csproj" />
+	</ItemGroup>
+
+</Project>

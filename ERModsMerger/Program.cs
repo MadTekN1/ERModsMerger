@@ -1,0 +1,230 @@
+﻿using ERModsMerger;
+using ERModsMerger.Core;
+using System.Reflection;
+using System.Text;
+using static Org.BouncyCastle.Math.EC.ECCurve;
+
+Console.OutputEncoding = Encoding.UTF8;
+
+string[] arguments = args;
+
+
+
+if (arguments.Contains("/merge"))
+{
+    Console.ForegroundColor = ConsoleColor.DarkYellow;
+    Console.WriteLine("Welcome to Elden Ring Mods Merger!\n");
+    Console.ResetColor();
+
+    ModsMerger.StartMerge();
+    goto End;
+}
+
+ 
+
+DialConsole.WriteLine("Welcome to Elden Ring Mods Merger!\n", ConsoleColor.DarkYellow);
+
+Start:
+
+if (!File.Exists("ERModsMergerConfig\\config.json"))
+{
+    Thread.Sleep(300);
+    DialConsole.Write("It's your first time launching me... ");
+    Thread.Sleep(300);
+    DialConsole.WriteLine("I see...\n");
+    Thread.Sleep(300);
+    DialConsole.WriteLine("Let me setup the basics for you, this should take only few seconds...\n");
+
+
+    DialConsole.Write("And......... ");
+
+    //FIRST LAUNCH INIT FOLDER, CONFIG AND FILES
+
+    if (!Directory.Exists("ERModsMergerConfig"))
+        Directory.CreateDirectory("ERModsMergerConfig");
+
+    ModsMergerConfig config = new ModsMergerConfig();
+    ModsMergerConfig.LoadedConfig = config;
+    ModsMergerConfig.SaveConfig();
+
+    //extract embedded res
+    ExtractParamDefsEmbeddedResources();
+
+    Directory.CreateDirectory(config.ModsToMergeFolderPath);
+
+    if(!Directory.Exists(config.MergedModsFolderPath))
+        Directory.CreateDirectory(config.MergedModsFolderPath);
+
+    //FIRST LAUNCH END INIT
+
+    Thread.Sleep(300);
+    DialConsole.WriteLine("VOILA!\n");
+
+
+    Thread.Sleep(300);
+    DialConsole.WriteLine("Now we're good to start the MERGE!\n\n");
+
+
+    Thread.Sleep(500);
+    DialConsole.WriteLine("CLEARING!");
+
+    Thread.Sleep(700);
+    Console.Clear();
+    Console.ForegroundColor = ConsoleColor.DarkYellow;
+    Console.WriteLine("Welcome to Elden Ring Mods Merger!\n");
+    Console.ResetColor();
+}
+
+
+if (ModsMergerConfig.LoadedConfig == null)
+    ModsMergerConfig.LoadConfig();
+
+Thread.Sleep(500);
+DialConsole.WriteLine("Let's get this done!\n");
+
+Thread.Sleep(500);
+DialConsole.Write("Copy your mods into the ");
+DialConsole.Write("ModsToMerge", ConsoleColor.DarkYellow);
+DialConsole.Write(" folder! ");
+
+Thread.Sleep(750);
+DialConsole.Write("Just try to respect the mod structure and I'll do my best.\n");
+Thread.Sleep(750);
+DialConsole.WriteLine("You want an example I guess...");
+
+Console.ForegroundColor = ConsoleColor.Cyan;
+Console.WriteLine("\n\n<<YES I WANT AN EXAMPLE (Press 'E')>>\t<<NO I'M READY, MERGE MY SH*T! (Press 'M')>>");
+Console.ResetColor();
+
+char keyPressed = Console.ReadKey(true).KeyChar;
+
+//EXAMPLE
+if(keyPressed == 'e' || keyPressed == 'E')
+{
+    Thread.Sleep(500);
+    DialConsole.Write("\nOK then! Here is an example of how mods should be placed in the ModsToMerge folder:\n\n");
+
+    Thread.Sleep(500);
+    DialConsole.WriteLine("📂  ModsToMerge", ConsoleColor.DarkYellow);
+    DialConsole.WriteLine("   📂  ModExample1", ConsoleColor.DarkYellow);
+    DialConsole.WriteLine("      📄  regulation.bin", ConsoleColor.DarkGray);
+    DialConsole.WriteLine("      📂  event", ConsoleColor.DarkYellow);
+    DialConsole.WriteLine("         📄  m10_00_00_00.emevd.dcx", ConsoleColor.DarkGray);
+    DialConsole.WriteLine("         📄  m12_01_00_00.emevd.dcx", ConsoleColor.DarkGray);
+    DialConsole.WriteLine("         📄  ...", ConsoleColor.DarkGray);
+    DialConsole.WriteLine("      📂  parts", ConsoleColor.DarkYellow);
+    DialConsole.WriteLine("         📄  am_f_0000.partsbnd.dcx", ConsoleColor.DarkGray);
+    DialConsole.WriteLine("         📄  wp_a_0424_l.partsbnd.dcx", ConsoleColor.DarkGray);
+    DialConsole.WriteLine("         📄  ...\n", ConsoleColor.DarkGray);
+
+
+    DialConsole.WriteLine("   📂  ModExample2", ConsoleColor.DarkYellow);
+    DialConsole.WriteLine("      📄  regulation.bin", ConsoleColor.DarkGray);
+    DialConsole.WriteLine("      📂  map", ConsoleColor.DarkYellow);
+    DialConsole.WriteLine("         📂  mapstudio", ConsoleColor.DarkYellow);
+    DialConsole.WriteLine("            📄  m10_00_00_00.msb.dcx", ConsoleColor.DarkGray);
+    DialConsole.WriteLine("            📄  m30_12_00_00.msb.dcx", ConsoleColor.DarkGray);
+    DialConsole.WriteLine("            📄  ...", ConsoleColor.DarkGray);
+    DialConsole.WriteLine("      📂  chr", ConsoleColor.DarkYellow);
+    DialConsole.WriteLine("         📄  c0000_a00_lo.anibnd.dcx", ConsoleColor.DarkGray);
+    DialConsole.WriteLine("         📄  c2010_div00.anibnd.dcx", ConsoleColor.DarkGray);
+    DialConsole.WriteLine("         📄  ...", ConsoleColor.DarkGray);
+
+    DialConsole.WriteLine("\nEtc etc etc...\n");
+
+    Thread.Sleep(1500);
+
+    DialConsole.Write("NOTES:\n- Mods have priority order depending of how they are placed in the");
+    DialConsole.Write(" ModsToMerge ", ConsoleColor.DarkYellow);
+    DialConsole.Write("folder (alphabetical order)\n  so be careful of the names you give to your mods folder.\n");
+    DialConsole.WriteLine("- Conflicting regulation.bin will be merged into one. More merge possibilities will be added in the future.");
+    DialConsole.WriteLine("- Conflicting other files (map, parts, etc) will keep the one with higher priority.\n");
+
+
+    DisplayCurrentConfig();
+
+    DialConsole.WriteLine("\nPress 'M' when you're ready for the merge!");
+    Console.ForegroundColor = ConsoleColor.Cyan;
+    Console.WriteLine("\n\n<<I'M READY, MERGE MY SH*T! (Press 'M')>>");
+    Console.ResetColor();
+
+    var kchar = Console.ReadKey(true).KeyChar;
+    if (kchar == 'm' || kchar == 'M')
+    {
+        Thread.Sleep(500);
+        DialConsole.WriteLine("\nLet's go! MERGE!\n\n");
+        ModsMerger.StartMerge();
+        DialConsole.WriteLine("It's over, press any key to quit!");
+        Console.ReadKey();
+    }
+    else
+    {
+        Fail();
+        goto Start;
+    }
+}
+//MERGE
+else if(keyPressed == 'm'|| keyPressed == 'M')
+{
+    Thread.Sleep(500);
+    DialConsole.WriteLine("\nLet's go! MERGE!\n\n");
+    ModsMerger.StartMerge();
+    DialConsole.WriteLine("It's over, press any key to quit!");
+    Console.ReadKey();
+}
+else
+{
+    Fail();
+    goto Start;
+}
+
+
+
+
+void ExtractParamDefsEmbeddedResources()
+{
+    if (!Directory.Exists("ERModsMergerConfig\\ParamDefs"))
+        Directory.CreateDirectory("ERModsMergerConfig\\ParamDefs");
+
+
+    string[] resNames = Assembly.GetAssembly(typeof(ERModsMerger.Core.ModsMerger)).GetManifestResourceNames();
+    foreach (string resName in resNames)
+    {
+        string fileName = resName.Replace("ERModsMerger.Core.ERModsMergerConfig.ParamDefs.", "");
+        string filePath = "ERModsMergerConfig\\ParamDefs\\" + fileName;
+
+        using (var stream = Assembly.GetAssembly(typeof(ERModsMerger.Core.ModsMerger)).GetManifestResourceStream(resName))
+        using (StreamReader reader = new StreamReader(stream))
+        {
+            File.WriteAllText(filePath, reader.ReadToEnd());
+        }
+    }
+}
+
+void DisplayCurrentConfig()
+{
+    DialConsole.WriteLine("Current config:");
+    DialConsole.WriteLine("Game Path:\t\t" + ModsMergerConfig.LoadedConfig.GamePath);
+    DialConsole.WriteLine("Mods to be merged:\t" + ModsMergerConfig.LoadedConfig.ModsToMergeFolderPath);
+    DialConsole.WriteLine("Merged mods:\t\t" + ModsMergerConfig.LoadedConfig.MergedModsFolderPath);
+    Console.WriteLine();
+
+    DialConsole.Write("To modify the config, open and edit ");
+    DialConsole.Write("ERModsMergerConfig\\Config.json", ConsoleColor.DarkYellow);
+    DialConsole.Write(" with any text editor (eg: Notepad), remember to save it.\n");
+}
+
+void Fail()
+{
+    DialConsole.WriteLine("\nBruh! For real? You just had to press one key and you FAILED!\n");
+    Thread.Sleep(2500);
+    DialConsole.WriteLine("Now you win the right to start all over again... cheh");
+    Thread.Sleep(1000);
+    Console.Clear();
+    DialConsole.Write("Welcome to Elden Ring Mods Merger! ", ConsoleColor.DarkYellow);
+    Thread.Sleep(1000);
+    DialConsole.Write("I'm not even kidding.\n\n", ConsoleColor.DarkYellow);
+}
+
+End:;
+
