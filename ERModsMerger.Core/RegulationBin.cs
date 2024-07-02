@@ -9,6 +9,8 @@ namespace ERModsMerger.Core
         Dictionary<string, PARAMDEF> _paramdefs;
         public Dictionary<string, PARAM> Params { get; set; }
 
+        public string Version { get; set; }
+
         public RegulationBin(string path) 
         { 
             LoadParamDefs();
@@ -19,7 +21,7 @@ namespace ERModsMerger.Core
 
         private void Load()
         {
-            ulong version = Convert.ToUInt64(bnd.Version);
+            Version = bnd.Version; // should be 11220021
             for (int i = 0; i < bnd.Files.Count; i++)
             {
                 double progress = ((double)i / (double)bnd.Files.Count) * 100;
@@ -73,7 +75,9 @@ namespace ERModsMerger.Core
             int maxCounter = fromParams.Count;
             foreach (var fromParam in fromParams)
             {
-                Console.Write($"\rMerging regulation.bin - Progress {Math.Round(((double)counter / (double)maxCounter) * 100, 0)}%");
+                string mergingProgressConsole = $"\rMerging regulation.bin - Progress {Math.Round(((double)counter / (double)maxCounter) * 100, 0)}%";
+
+                Console.Write(mergingProgressConsole);
 
                 bool modifiedParam = false;
 
@@ -82,30 +86,46 @@ namespace ERModsMerger.Core
                     int rowId = fromParam.Value.Rows[r].ID;
                     int rowIndexFound = Params[fromParam.Key].Rows.FindIndex(x => x.ID == rowId);
 
-                    if (rowIndexFound != -1 && Params[fromParam.Key].Rows.Count(x => x.ID == rowId) == 1) // if row to merge already exist AND have not ID duplicates
+                    // if row to merge already exist AND have not ID duplicates
+                    if (rowIndexFound != -1 && Params[fromParam.Key].Rows.Count(x => x.ID == rowId) == 1)
                     {
-                        for (int c = 0; c < fromParam.Value.Rows[r].Cells.Count; c++)
+                        try
                         {
-                            if (Params[fromParam.Key].Rows[rowIndexFound].Cells[c] != null && fromParam.Value.Rows[r].Cells[c] != null)
+                            for (int c = 0; c < fromParam.Value.Rows[r].Cells.Count; c++)
                             {
-                                var valParam = Params[fromParam.Key].Rows[rowIndexFound].Cells[c].Value;
-
-                                string nameFromParam = fromParam.Value.Rows[r].Cells[c].Def.ToString();
-                                var valFromParam = fromParam.Value.Rows[r].Cells[c].Value;
-
-                                //TODO: control existing value
-                                var valFromVanilla = vanillaParams[fromParam.Key].Rows[rowIndexFound].Cells[c].Value;
-
-                                if (!Compare(valFromVanilla, valFromParam))
+                                if (Params[fromParam.Key].Rows[rowIndexFound].Cells[c] != null && fromParam.Value.Rows[r].Cells[c] != null)
                                 {
 
-                                    Params[fromParam.Key].Rows[rowIndexFound].Cells[c].Value = valFromParam;
-                                    modifiedParam = true;
+                                    var valFromParam = fromParam.Value.Rows[r].Cells[c].Value;
+
+                                    // verify if row exist in vanilla
+                                    if (vanillaParams[fromParam.Key].Rows.Count > rowIndexFound)
+                                    {
+                                        var valFromVanilla = vanillaParams[fromParam.Key].Rows[rowIndexFound].Cells[c].Value;
+
+                                        if (!Compare(valFromVanilla, valFromParam))
+                                        {
+                                            Params[fromParam.Key].Rows[rowIndexFound].Cells[c].Value = valFromParam;
+                                            modifiedParam = true;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Params[fromParam.Key].Rows[rowIndexFound].Cells[c].Value = valFromParam;
+                                        modifiedParam = true;
+                                    }
+
                                 }
 
                             }
 
                         }
+                        catch (Exception e)
+                        {
+                            Console.Write($"\r⚠ Error during merging Row {r.ToString()} in Param {fromParam.Key}\n");
+                        }
+
+                        
                     }
                     else if(rowIndexFound == -1) // if the row to merge is a new one
                     {
@@ -132,7 +152,7 @@ namespace ERModsMerger.Core
                     }
                     catch (Exception e)
                     {
-
+                        Console.Write($"\r⚠ Unable to merge Param {fromParam.Key}\n");
                     }
                 }
                 counter++;

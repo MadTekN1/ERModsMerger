@@ -2,7 +2,6 @@
 using ERModsMerger.Core;
 using System.Reflection;
 using System.Text;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 
 Console.OutputEncoding = Encoding.UTF8;
 
@@ -45,6 +44,12 @@ if (!File.Exists("ERModsMergerConfig\\config.json"))
 
     ModsMergerConfig config = new ModsMergerConfig();
     ModsMergerConfig.LoadedConfig = config;
+
+    // search for elden ring path
+    var pathEldenRing = Utils.GetInstallPath("ELDEN RING"); // return C:\\Program Files (x86)\\Steam\\steamapps\\common\\ELDEN RING
+    if(pathEldenRing != null || pathEldenRing != "")
+        ModsMergerConfig.LoadedConfig.GamePath = pathEldenRing + "\\Game";
+
     ModsMergerConfig.SaveConfig();
 
     //extract embedded res
