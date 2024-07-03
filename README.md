@@ -4,7 +4,7 @@ Simple tool to merge Elden Ring mods.
 NOTE: This tool just got released and still under testing. Thanks to report if you have issues.
 ## Usage
 Highly recommended: Use [ModEngine2](https://github.com/soulsmods/ModEngine2), place ERModsMerger.exe in the same folder and edit config_eldenring.toml as follow:
-```json
+```
 mods = [
     { enabled = true, name = "default", path = "MergedMods" }
 ]
