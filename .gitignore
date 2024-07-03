@@ -396,3 +396,4 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/ERModsMerger/Properties/PublishProfiles/FolderProfile.pubxml
