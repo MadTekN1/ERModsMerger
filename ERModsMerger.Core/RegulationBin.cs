@@ -59,7 +59,6 @@ namespace ERModsMerger.Core
                 {
                     var name = bnd.Files[i].Name.Split("\\").Last();
                     var message = $"Could not apply ParamDef for {name}";
-
                 }
 
                 Params.Add(paramName, p);
@@ -68,8 +67,8 @@ namespace ERModsMerger.Core
             Console.WriteLine($"\rProgess: 100% - Loaded ✓");
         }
 
-       
-        public void MergeFrom(Dictionary<string, PARAM> fromParams, Dictionary<string, PARAM> vanillaParams)
+
+        public void MergeFrom(Dictionary<string, PARAM> fromParams, Dictionary<string, PARAM> vanillaParams, bool manualConflictResolving = false)
         {
             int counter = 0;
             int maxCounter = fromParams.Count;
@@ -95,18 +94,54 @@ namespace ERModsMerger.Core
                             {
                                 if (Params[fromParam.Key].Rows[rowIndexFound].Cells[c] != null && fromParam.Value.Rows[r].Cells[c] != null)
                                 {
-
+                                    var valCurrent = Params[fromParam.Key].Rows[rowIndexFound].Cells[c].Value;
                                     var valFromParam = fromParam.Value.Rows[r].Cells[c].Value;
+                                    
 
                                     // verify if row exist in vanilla
                                     if (vanillaParams[fromParam.Key].Rows.Count > rowIndexFound)
                                     {
                                         var valFromVanilla = vanillaParams[fromParam.Key].Rows[rowIndexFound].Cells[c].Value;
 
+                                        //modded param->row->field is different from vanilla
                                         if (!Compare(valFromVanilla, valFromParam))
                                         {
-                                            Params[fromParam.Key].Rows[rowIndexFound].Cells[c].Value = valFromParam;
-                                            modifiedParam = true;
+                                            //detect an attempt to re-edit a value already edited by another mod
+                                            //manual resolving
+                                            if(manualConflictResolving && !Compare(valCurrent, valFromVanilla))
+                                            {
+                                                Console.Write($"\r- Detected conflict in {fromParam.Key}->[{rowIndexFound.ToString()}] {Params[fromParam.Key].Rows[rowIndexFound].Name}->{Params[fromParam.Key].Rows[rowIndexFound].Cells[c].Def.ToString()}\n");
+                                                Console.Write($"   From value: {valCurrent.ToString()}\n");
+                                                Console.Write($"   To value: {valFromParam.ToString()}\n\n");
+
+                                                Console.ForegroundColor = ConsoleColor.Cyan;
+                                                Console.Write("\r<<APPLY NEW VALUE (Press 'A')>> || <<PRESS ANY OTHER KEY TO IGNORE>>");
+                                                Console.ResetColor();
+
+                                                char keyPressed = Console.ReadKey(true).KeyChar;
+
+                                                if(keyPressed == 'A' || keyPressed == 'a')
+                                                {
+                                                    Params[fromParam.Key].Rows[rowIndexFound].Cells[c].Value = valFromParam;
+                                                    modifiedParam = true;
+                                                    Console.ForegroundColor = ConsoleColor.DarkGreen;
+                                                    Console.Write("\rNew value applied!                                                         \n\n");
+                                                    Console.ResetColor();
+                                                }
+                                                else
+                                                {
+                                                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                                                    Console.Write("\rNew value ignored!                                                         \n\n");
+                                                    Console.ResetColor();
+                                                }
+
+                                            }
+                                            else
+                                            {
+                                                Params[fromParam.Key].Rows[rowIndexFound].Cells[c].Value = valFromParam;
+                                                modifiedParam = true;
+                                            }
+
                                         }
                                     }
                                     else

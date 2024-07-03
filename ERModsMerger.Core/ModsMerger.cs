@@ -4,10 +4,11 @@ namespace ERModsMerger.Core
 {
     public static class ModsMerger
     {
-        public static void StartMerge()
+        public static void StartMerge(bool manualConflictResolving = false)
         {
 
             Console.WriteLine("LOG: Retrieve config");
+
             ModsMergerConfig config = ModsMergerConfig.LoadConfig();
 
             if (config == null)
@@ -25,7 +26,7 @@ namespace ERModsMerger.Core
 
             if(!File.Exists(config.GamePath + "\\regulation.bin"))
             {
-                Console.WriteLine($"⚠ Could not locate vanilla regualtion bin at {config.GamePath}\n⚠ Please verify GamePath in ERModsMergerConfig\\config.json");
+                Console.WriteLine($"⚠ Could not locate vanilla regulation bin at {config.GamePath}\n⚠ Please verify GamePath in ERModsMergerConfig\\config.json");
                 return;
             }
 
@@ -89,7 +90,7 @@ namespace ERModsMerger.Core
                             {
                                 RegulationBin moddedRegulationBin = new RegulationBin(modsDirectories[i] + "\\regulation.bin");
 
-                                mainRegulationBin.MergeFrom(moddedRegulationBin.Params, vanillaRegulationBin.Params);
+                                mainRegulationBin.MergeFrom(moddedRegulationBin.Params, vanillaRegulationBin.Params, manualConflictResolving);
                             }
                             catch (Exception e)
                             {

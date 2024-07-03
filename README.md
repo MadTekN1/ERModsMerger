@@ -4,7 +4,7 @@ Simple tool to merge Elden Ring mods.
 NOTE: This tool just got released and still under testing. Thanks to report if you have issues.
 ## Usage
 Highly recommended: Use [ModEngine2](https://github.com/soulsmods/ModEngine2), place ERModsMerger.exe in the same folder and edit config_eldenring.toml as follow:
-```
+```json
 mods = [
     { enabled = true, name = "default", path = "MergedMods" }
 ]
@@ -14,6 +14,18 @@ Launch ERModsMerger.exe and let it guide you through the process, it will self e
 ## Troubleshooting & Solutions
 
 - ERModsMerger.exe don't launch: Make sure [.Net 8 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-8.0.6-windows-x64-installer) is installed on your system.
+
+- Fail to load config or could not locate regulation bin: This likely happen when ERModsMergerConfig\\config.json is modified with invalid values / format. Here is an example of a modified config.json:
+
+	```json
+	{
+	  "GamePath": "C:\\New\\path\\to the folder of\\ELDEN RING\\Game",
+	  "ModsToMergeFolderPath": "ModsToMerge",
+	  "MergedModsFolderPath": "MergedMods"
+	}
+	```
+  * Respect the format presented above and dont forget to add double `\\` between each folders in paths.
+  
 
 - Vanilla game/modded regulation.bin don't load: The app might be not compatible with this regulation.bin, make sure your game/mods are up to date (working regulation version is 1.12.2)
 

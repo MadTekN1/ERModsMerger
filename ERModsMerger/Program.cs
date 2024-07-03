@@ -8,6 +8,12 @@ Console.OutputEncoding = Encoding.UTF8;
 string[] arguments = args;
 
 
+if (ModsMergerConfig.LoadedConfig == null)
+    ModsMergerConfig.LoadConfig();
+
+//save the loaded config, this add any new field when app is updated
+if (ModsMergerConfig.LoadedConfig != null)
+    ModsMergerConfig.SaveConfig();
 
 if (arguments.Contains("/merge"))
 {
@@ -81,24 +87,22 @@ if (!File.Exists("ERModsMergerConfig\\config.json"))
 }
 
 
-if (ModsMergerConfig.LoadedConfig == null)
-    ModsMergerConfig.LoadConfig();
-
-Thread.Sleep(500);
+Thread.Sleep(300);
 DialConsole.WriteLine("Let's get this done!\n");
 
-Thread.Sleep(500);
+Thread.Sleep(300);
 DialConsole.Write("Copy your mods into the ");
 DialConsole.Write("ModsToMerge", ConsoleColor.DarkYellow);
 DialConsole.Write(" folder! ");
 
-Thread.Sleep(750);
+Thread.Sleep(500);
 DialConsole.Write("Just try to respect the mod structure and I'll do my best.\n");
-Thread.Sleep(750);
+Thread.Sleep(500);
 DialConsole.WriteLine("You want an example I guess...");
 
 Console.ForegroundColor = ConsoleColor.Cyan;
-Console.WriteLine("\n\n<<YES I WANT AN EXAMPLE (Press 'E')>>\t<<NO I'M READY, MERGE MY SH*T! (Press 'M')>>");
+Console.WriteLine("\n\n<<NO I'M READY, MERGE MY SH*T! (Press 'M')>>\t\t<<YES I WANT AN EXAMPLE (Press 'E')>>");
+Console.WriteLine("<<MERGE WITH MANUAL CONFLICTS RESOLVING (Press 'A')>>");
 Console.ResetColor();
 
 char keyPressed = Console.ReadKey(true).KeyChar;
@@ -137,7 +141,7 @@ if(keyPressed == 'e' || keyPressed == 'E')
 
     DialConsole.WriteLine("\nEtc etc etc...\n");
 
-    Thread.Sleep(1500);
+    Thread.Sleep(1000);
 
     DialConsole.Write("NOTES:\n- Mods have priority order depending of how they are placed in the");
     DialConsole.Write(" ModsToMerge ", ConsoleColor.DarkYellow);
@@ -174,6 +178,14 @@ else if(keyPressed == 'm'|| keyPressed == 'M')
     Thread.Sleep(500);
     DialConsole.WriteLine("\nLet's go! MERGE!\n\n");
     ModsMerger.StartMerge();
+    DialConsole.WriteLine("It's over, press any key to quit!");
+    Console.ReadKey();
+}
+else if (keyPressed == 'a' || keyPressed == 'A')
+{
+    Thread.Sleep(500);
+    DialConsole.WriteLine("\nLet's go! MANUAL MERGE!\n\n");
+    ModsMerger.StartMerge(true);
     DialConsole.WriteLine("It's over, press any key to quit!");
     Console.ReadKey();
 }

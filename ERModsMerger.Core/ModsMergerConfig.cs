@@ -56,6 +56,8 @@ namespace ERModsMerger.Core
         string _mergedModsFolderPath = "MergedMods";
         public string MergedModsFolderPath { get { return _mergedModsFolderPath; } set { _mergedModsFolderPath = value; } }
 
+        int _consolePrintDelay = 15;
+        public int ConsolePrintDelay { get { return _consolePrintDelay; } set { _consolePrintDelay = value; } }
 
 
         public ModsMergerConfig()
