@@ -70,7 +70,7 @@ namespace ERModsMerger.Core
             Console.WriteLine($"\rProgess: 100% - Loaded ✓");
         }
 
-
+        //TODO USE SAME CONFLICT SYSTEM THAN FILE DISPATCHER
         public void MergeFrom(Dictionary<string, PARAM> fromParams, Dictionary<string, PARAM> vanillaParams, bool manualConflictResolving = false)
         {
             int counter = 0;
@@ -106,12 +106,13 @@ namespace ERModsMerger.Core
                                     {
                                         var valFromVanilla = vanillaParams[fromParam.Key].Rows[rowIndexFound].Cells[c].Value;
 
+
                                         //modded param->row->field is different from vanilla
-                                        if (!Compare(valFromVanilla, valFromParam))
+                                        if (!Utils.AdvancedEquals(valFromVanilla, valFromParam))
                                         {
                                             //detect an attempt to re-edit a value already edited by another mod
                                             //manual resolving
-                                            if(manualConflictResolving && !Compare(valCurrent, valFromVanilla))
+                                            if(manualConflictResolving && !Utils.AdvancedEquals(valCurrent, valFromVanilla))
                                             {
                                                 Console.Write($"\r- Detected conflict in {fromParam.Key}->[{rowIndexFound.ToString()}] {Params[fromParam.Key].Rows[rowIndexFound].Name}->{Params[fromParam.Key].Rows[rowIndexFound].Cells[c].Def.ToString()}\n");
                                                 Console.Write($"   From value: {valCurrent.ToString()}\n");
@@ -231,8 +232,6 @@ namespace ERModsMerger.Core
 
         }
 
-
-
         public static void MergeRegulations(List<FileToMerge> regulationBinFiles, bool manualConflictResolving)
         {
             Console.WriteLine("LOG: Loading vanilla regulation.bin");
@@ -302,17 +301,19 @@ namespace ERModsMerger.Core
             Console.WriteLine("Saved in: " + ModsMergerConfig.LoadedConfig.MergedModsFolderPath + "\\regulation.bin");
         }
 
+    }
 
+    internal class RegulationFieldConflict
+    {
+        string ParamName { get; set; }
+        int RowId {  get; set; }
+        object FieldValue {  get; set; }
 
-        public static bool Compare(object? x, object? y)
+        public RegulationFieldConflict(string paramName, int rowId, object fieldValue)
         {
-            if (x is null || y is null)
-                return false;
-
-            if (x is IEnumerable a && y is IEnumerable b)
-                return a.Cast<object>().SequenceEqual(b.Cast<object>());
-
-            return x.Equals(y);
+            ParamName = paramName;
+            RowId = rowId;
+            FieldValue = fieldValue;
         }
     }
 }
