@@ -21,7 +21,10 @@ namespace ERModsMerger.Core
 
         private void Load()
         {
-            Version = bnd.Version; // should be 11220021
+            Version = Utils.ParseParamVersion(Convert.ToUInt64(bnd.Version)); // should be 11220021
+
+            Console.WriteLine("Regulation version: "+ Version);
+
             for (int i = 0; i < bnd.Files.Count; i++)
             {
                 double progress = ((double)i / (double)bnd.Files.Count) * 100;
@@ -202,8 +205,6 @@ namespace ERModsMerger.Core
         }
 
 
-       
-
         public void Dispose()
         {
             bnd.Dispose();
@@ -229,6 +230,79 @@ namespace ERModsMerger.Core
             }
 
         }
+
+
+
+        public static void MergeRegulations(List<FileToMerge> regulationBinFiles, bool manualConflictResolving)
+        {
+            Console.WriteLine("LOG: Loading vanilla regulation.bin");
+
+            if (!File.Exists(ModsMergerConfig.LoadedConfig.GamePath + "\\regulation.bin"))
+            {
+                Console.WriteLine($"⚠  Could not locate vanilla regulation bin at {ModsMergerConfig.LoadedConfig.GamePath}\n⚠ Please verify GamePath in ERModsMergerConfig\\config.json");
+                return;
+            }
+
+            //load vanilla regulation.bin
+            RegulationBin vanillaRegulationBin;
+            try
+            {
+                vanillaRegulationBin = new RegulationBin(ModsMergerConfig.LoadedConfig.GamePath + "\\regulation.bin");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("⚠  Could not load vanilla regulation.bin\n⚠ Your game regulation version might be incompatible");
+                return;
+            }
+
+            //load modded regulation.bin
+            Console.WriteLine($"\nLOG: Loading initial modded regulation: {regulationBinFiles[0].Path}");
+
+            RegulationBin mainRegulationBin;
+            try
+            {
+                mainRegulationBin = new RegulationBin(regulationBinFiles[0].Path);
+
+                if (mainRegulationBin.Version != vanillaRegulationBin.Version)
+                    Console.Write("⚠  Regulation version doesn't match - If you encounter any issue, please update this mod\n");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"⚠  Could not load {regulationBinFiles[0].Path}\n⚠ Regulation version might be incompatible");
+                return;
+            }
+
+            Console.WriteLine();
+
+            for (int i = 1; i < regulationBinFiles.Count; i++)
+            {
+                if (File.Exists(regulationBinFiles[i].Path))
+                {
+                    //load modded regulation.bin
+                    Console.WriteLine($"LOG: Loading {regulationBinFiles[i].Path}");
+
+                    try
+                    {
+                        RegulationBin moddedRegulationBin = new RegulationBin(regulationBinFiles[i].Path);
+
+                        if (moddedRegulationBin.Version != vanillaRegulationBin.Version)
+                            Console.Write("⚠  Regulation version doesn't match - If you encounter any issue, please update this mod\n");
+
+                        mainRegulationBin.MergeFrom(moddedRegulationBin.Params, vanillaRegulationBin.Params, manualConflictResolving);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"⚠  Could not load {regulationBinFiles[i].Path}\n⚠ Regulation version might be incompatible");
+                    }
+                }
+            }
+
+            Console.WriteLine("LOG: Saving merged regulation.bin");
+            mainRegulationBin.Save(ModsMergerConfig.LoadedConfig.MergedModsFolderPath + "\\regulation.bin");
+            Console.WriteLine("Saved in: " + ModsMergerConfig.LoadedConfig.MergedModsFolderPath + "\\regulation.bin");
+        }
+
+
 
         public static bool Compare(object? x, object? y)
         {

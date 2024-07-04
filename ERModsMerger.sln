@@ -9,6 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ERModsMerger.Core", "ERMods
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoulsFormats", "SoulsFormats\SoulsFormats.csproj", "{5CEBB287-21E3-49A7-A0E9-0C3A9033994C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Éléments de solution", "Éléments de solution", "{5B3BFC52-9014-4A03-84A4-FB37E1E43853}"
+	ProjectSection(SolutionItems) = preProject
+		CommonAssemblyProperties.props = CommonAssemblyProperties.props
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

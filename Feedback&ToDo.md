@@ -3,7 +3,7 @@
 ## Known Issues
 
 - Game versions under 1.12 and Regulation versions under 1.12.2 cannot load the merged regulation.bin
-- Deprecated regulation files version cannot be loaded in the app
+- Deprecated regulation files versions cannot be loaded in the app
 
 ## ToDo
 

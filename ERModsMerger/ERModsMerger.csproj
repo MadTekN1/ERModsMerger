@@ -1,31 +1,51 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+	<Import Project="..\CommonAssemblyProperties.props" />
+    <PropertyGroup>
+		<Copyright>Copyright © 2024 MadTekN1</Copyright>
+		<Description>Simple little tool to merge Elden Ring mods.</Description>
+		<Company>MadTek</Company>
+		<Authors>MadTek</Authors>
+		<PackageProjectUrl>https://github.com/MadTekN1/ERModsMerger</PackageProjectUrl>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <ApplicationIcon>icon.ico</ApplicationIcon>
-    <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
-  </PropertyGroup>
+		<OutputType>Exe</OutputType>
+        <TargetFramework>net8.0-windows</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <ApplicationIcon>icon.ico</ApplicationIcon>
+        <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+        
+    </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
-    <DebugType>full</DebugType>
-  </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
+        <DebugType>full</DebugType>
+    </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
-	<DebugType>None</DebugType>
-	<DebugSymbols>false</DebugSymbols>
-  </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
+        <DebugType>None</DebugType>
+        <DebugSymbols>false</DebugSymbols>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <Content Include="icon.ico" />
-  </ItemGroup>
+    <ItemGroup>
+        <Content Include="icon.ico" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\ERModsMerger.Core\ERModsMerger.Core.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+      <None Include="..\LICENSE">
+        <Pack>True</Pack>
+        <PackagePath>\</PackagePath>
+      </None>
+      <None Include="..\README.md">
+        <Pack>True</Pack>
+        <PackagePath>\</PackagePath>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\ERModsMerger.Core\ERModsMerger.Core.csproj" />
+    </ItemGroup>
 
 </Project>

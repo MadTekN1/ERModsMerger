@@ -20,7 +20,7 @@ public class Oodle
         {
             return true;
         }
-        if (Path.Exists($@"{Directory.GetCurrentDirectory()}\oo2core_6_win64.dll"))
+        if (Path.Exists($@"{Directory.GetCurrentDirectory()}\ERModsMergerConfig\oo2core_6_win64.dll"))
         {
             Oodle6Exists = true;
             return true;
@@ -34,7 +34,7 @@ public class Oodle
         {
             return true;
         }
-        if (Path.Exists($@"{Directory.GetCurrentDirectory()}\oo2core_8_win64.dll"))
+        if (Path.Exists($@"{Directory.GetCurrentDirectory()}\ERModsMergerConfig\oo2core_8_win64.dll"))
         {
             Oodle8Exists = true;
             return true;

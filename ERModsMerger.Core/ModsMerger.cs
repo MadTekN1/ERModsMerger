@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using DotNext.Collections.Generic;
+using System.Reflection;
 
 namespace ERModsMerger.Core
 {
@@ -22,27 +23,6 @@ namespace ERModsMerger.Core
             Console.WriteLine("-- START MERGING --\n");
 
 
-            Console.WriteLine("LOG: Loading vanilla regulation.bin");
-
-            if(!File.Exists(config.GamePath + "\\regulation.bin"))
-            {
-                Console.WriteLine($"⚠ Could not locate vanilla regulation bin at {config.GamePath}\n⚠ Please verify GamePath in ERModsMergerConfig\\config.json");
-                return;
-            }
-
-            //load vanilla regulation.bin
-            RegulationBin vanillaRegulationBin;
-            try
-            {
-                vanillaRegulationBin = new RegulationBin(config.GamePath + "\\regulation.bin");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("⚠ Could not load vanilla regulation.bin\n⚠ Your game regulation version might be incompatible");
-                return;
-            }
-            
-
             string[] dirs = Directory.GetDirectories(config.ModsToMergeFolderPath);
             if(dirs != null && dirs.Length > 0)
             {
@@ -60,49 +40,22 @@ namespace ERModsMerger.Core
 
                 Console.Write(" - Done\n\n");
 
-                //load modded regulation.bin files and merge them into mainRegulationBin
-                if (File.Exists(modsDirectories[0] + "\\regulation.bin"))
-                {
-                    //load modded regulation.bin
-                    Console.WriteLine($"LOG: Loading initial modded regulation: {modsDirectories[0]}\\regulation.bin");
 
-                    RegulationBin mainRegulationBin;
-                    try
-                    {
-                        mainRegulationBin = new RegulationBin(modsDirectories[0] + "\\regulation.bin");
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine($"⚠ Could not load {modsDirectories[0]}\\regulation.bin\n⚠ Regulation version might be incompatible");
-                        return;
-                    }
+                //Search all files in directories, add them to the dispatcher and then search which files are conflicting
+                var dispatcher = new MergeableFilesDispatcher();
+                var allFiles = new List<string>();
+                foreach (string modsDirectory in modsDirectories)
+                    FindAllFiles(modsDirectory, ref allFiles, true);
 
-                    Console.WriteLine();
+                foreach (string file in allFiles)
+                    dispatcher.AddFile(file);
 
-                    for (int i = 1; i < modsDirectories.Count; i++)
-                    {
-                        if (File.Exists(modsDirectories[i] + "\\regulation.bin"))
-                        {
-                            //load modded regulation.bin
-                            Console.WriteLine($"LOG: Loading {modsDirectories[i]}\\regulation.bin");
+                dispatcher.SearchForConflicts();
 
-                            try
-                            {
-                                RegulationBin moddedRegulationBin = new RegulationBin(modsDirectories[i] + "\\regulation.bin");
+                
+                dispatcher.MergeAllConflicts(manualConflictResolving);
 
-                                mainRegulationBin.MergeFrom(moddedRegulationBin.Params, vanillaRegulationBin.Params, manualConflictResolving);
-                            }
-                            catch (Exception e)
-                            {
-                                Console.WriteLine($"⚠ Could not load {modsDirectories[i]}\\regulation.bin\n⚠ Regulation version might be incompatible");
-                            }
-                        }
-                    }
-
-                    Console.WriteLine("LOG: Saving merged regulation.bin");
-                    mainRegulationBin.Save(config.MergedModsFolderPath + "\\regulation.bin");
-                    Console.WriteLine("Saved in: " + config.MergedModsFolderPath + "\\regulation.bin");
-                }
+                
             }
             else
             {
@@ -113,7 +66,15 @@ namespace ERModsMerger.Core
 
         }
 
-        
+        static void FindAllFiles(string path, ref List<string> files, bool searchInSubDirectories)
+        {
+            files.AddAll(Directory.GetFiles(path).ToList());
+            if (searchInSubDirectories && Directory.GetDirectories(path).Length > 0)
+            {
+                foreach(var directory in Directory.GetDirectories(path))
+                    FindAllFiles(directory, ref files, searchInSubDirectories);
+            }
+        }
 
 
         static void CopyDirectory(string sourceDir, string destinationDir, bool recursive = true)

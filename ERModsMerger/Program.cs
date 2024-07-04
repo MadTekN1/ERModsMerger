@@ -15,6 +15,13 @@ if (ModsMergerConfig.LoadedConfig == null)
 if (ModsMergerConfig.LoadedConfig != null)
     ModsMergerConfig.SaveConfig();
 
+
+//look for Oodle dll
+if(!File.Exists("ERModsMergerConfig\\oo2core_6_win64.dll") && ModsMergerConfig.LoadedConfig != null)
+{
+    File.Copy(ModsMergerConfig.LoadedConfig.GamePath + "\\oo2core_6_win64.dll", "ERModsMergerConfig\\oo2core_6_win64.dll");
+}
+
 if (arguments.Contains("/merge"))
 {
     Console.ForegroundColor = ConsoleColor.DarkYellow;
@@ -207,13 +214,16 @@ void ExtractParamDefsEmbeddedResources()
     string[] resNames = Assembly.GetAssembly(typeof(ERModsMerger.Core.ModsMerger)).GetManifestResourceNames();
     foreach (string resName in resNames)
     {
-        string fileName = resName.Replace("ERModsMerger.Core.ERModsMergerConfig.ParamDefs.", "");
-        string filePath = "ERModsMergerConfig\\ParamDefs\\" + fileName;
-
-        using (var stream = Assembly.GetAssembly(typeof(ERModsMerger.Core.ModsMerger)).GetManifestResourceStream(resName))
-        using (StreamReader reader = new StreamReader(stream))
+        if(resName.Contains("ERModsMerger.Core.ERModsMergerConfig.ParamDefs."))
         {
-            File.WriteAllText(filePath, reader.ReadToEnd());
+            string fileName = resName.Replace("ERModsMerger.Core.ERModsMergerConfig.ParamDefs.", "");
+            string filePath = "ERModsMergerConfig\\ParamDefs\\" + fileName;
+
+            using (var stream = Assembly.GetAssembly(typeof(ERModsMerger.Core.ModsMerger)).GetManifestResourceStream(resName))
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                File.WriteAllText(filePath, reader.ReadToEnd());
+            }
         }
     }
 }

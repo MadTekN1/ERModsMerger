@@ -1,7 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
+	<Import Project="..\CommonAssemblyProperties.props" />
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+	  <Copyright>Copyright © 2024 MadTekN1</Copyright>
+	  <Description>Simple little tool to merge Elden Ring mods.</Description>
+	  <Company>MadTek</Company>
+	  <Authors>MadTek</Authors>
+	  <PackageProjectUrl>https://github.com/MadTekN1/ERModsMerger</PackageProjectUrl>
+	  <PackageReadmeFile>README.md</PackageReadmeFile>
+	  <PackageLicenseFile>LICENSE</PackageLicenseFile>
+
+	  <TargetFramework>net8.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -14,7 +22,7 @@
 
 
 	<ItemGroup>
-		<EmbeddedResource  CopyToOutputDirectory="never" Include="..\Assets\ParamDefs\**" Link="ERModsMergerConfig\ParamDefs\%(RecursiveDir)%(Filename)%(Extension)" />
+		<EmbeddedResource CopyToOutputDirectory="never" Include="..\Assets\ParamDefs\**" Link="ERModsMergerConfig\ParamDefs\%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
 
 	
