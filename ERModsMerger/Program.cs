@@ -17,7 +17,7 @@ if (ModsMergerConfig.LoadedConfig != null)
 
 
 //look for Oodle dll
-if(!File.Exists("ERModsMergerConfig\\oo2core_6_win64.dll") && ModsMergerConfig.LoadedConfig != null)
+if(!File.Exists("ERModsMergerConfig\\oo2core_6_win64.dll") && ModsMergerConfig.LoadedConfig != null && File.Exists(ModsMergerConfig.LoadedConfig.GamePath + "\\oo2core_6_win64.dll"))
 {
     File.Copy(ModsMergerConfig.LoadedConfig.GamePath + "\\oo2core_6_win64.dll", "ERModsMergerConfig\\oo2core_6_win64.dll");
 }
