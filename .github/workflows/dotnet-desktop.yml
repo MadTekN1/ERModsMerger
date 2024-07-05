@@ -30,9 +30,3 @@ jobs:
         with:
           name: 'ERModsMerger-${{  github.ref_name }}'
           path: '${{ runner.workspace }}/ERModsMerger/ERModsMerger/bin/Publish'
-      - name: Draft Release
-        uses: softprops/action-gh-release@v2
-        with:
-          draft: true
-          files: '${{ runner.workspace }}/ERModsMerger/ERModsMerger/bin/Publish/ERModsMerger-${{  github.ref_name }}.zip'
-            
