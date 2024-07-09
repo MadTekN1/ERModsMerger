@@ -43,6 +43,7 @@ namespace ERModsManager
 
             if(ModsMergerConfig.LoadedConfig == null)
             {
+                
                 ModsMergerConfig.LoadConfig(Global.ConfigFilePath);
                 ModsMergerConfig.SaveConfig(Global.ConfigFilePath); // save to apply eventual new properties
             }
@@ -60,8 +61,8 @@ namespace ERModsManager
             if (!File.Exists(config.GamePath + "\\regulation.bin"))
             {
                 MessageBox.Show("Hello there! Hope you're good. Seems it's your first launch of this app so welcome!\n\nBut Elden Ring game path couldn't be found, please tell me where it is.", "", MessageBoxButton.OK, MessageBoxImage.Question);
-                config.GamePath = MainConfigUC.SearchForEldenRingPath();
-                MainConfigUC.LabelGamePath.Content = config.GamePath;
+                config.GamePath = SearchForEldenRingPath();
+                //MainConfigUC.LabelGamePath.Content = config.GamePath;
             }
                 
 
@@ -229,6 +230,41 @@ namespace ERModsManager
                  this.Topmost = true;
                  MainLogsUC.TxtLogs.Text += "\n\nMerging Done!";
              }));
+
+        }
+
+        public string SearchForEldenRingPath()
+        {
+            var dialog = new OpenFileDialog();
+
+            dialog.DefaultExt = ".exe";
+            dialog.Multiselect = false;
+            dialog.Title = "Where is eldenring.exe?";
+            dialog.Filter = "Elden Ring (*.exe)|*.exe";
+
+            // Show open file dialog box
+            bool? result = dialog.ShowDialog();
+
+            // Process open file dialog box results
+            if (result == true)
+            {
+                bool goodDir = new DirectoryInfo(dialog.FileName).Parent.GetFiles().Any(x => x.Name == "regulation.bin");
+
+                if (goodDir)
+                {
+                    return new DirectoryInfo(dialog.FileName).Parent.FullName;
+                }
+                else
+                {
+                    MessageBox.Show("This is not Elden Ring Game folder, try again!");
+                    return SearchForEldenRingPath();
+                }
+
+            }
+            else
+                MessageBox.Show("Game Path is not set, this will probably not work very good...");
+
+            return "";
 
         }
     }

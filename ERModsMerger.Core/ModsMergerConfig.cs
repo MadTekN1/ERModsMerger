@@ -1,5 +1,9 @@
 ﻿using System.IO;
 using System.Text.Json;
+using static SoulsFormats.LUAINFO;
+using System.Windows;
+using System;
+using System.Reflection;
 
 namespace ERModsMerger.Core
 {
@@ -14,18 +18,21 @@ namespace ERModsMerger.Core
         /// <returns></returns>
         public static ModsMergerConfig? LoadConfig(string pathConfigFile = "ERModsMergerConfig\\config.json")
         {
-            if(File.Exists(pathConfigFile))
+            
+            if (File.Exists(pathConfigFile))
             {
                 try
                 {
+                    
                     LoadedConfig = (ModsMergerConfig?)JsonSerializer.Deserialize(File.ReadAllText(pathConfigFile), typeof(ModsMergerConfig));
-
+                    
                     CheckAndAddEnvVars();
                     CheckVersionAndEmbeddedExtraction();
                     return LoadedConfig;
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    MessageBox.Show(e.Message);
                     return null;
                 }
             }
@@ -38,11 +45,8 @@ namespace ERModsMerger.Core
         /// </summary>
         private static void CheckVersionAndEmbeddedExtraction()
         {
-            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
-            System.Diagnostics.FileVersionInfo fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
-            string version = fvi.FileVersion;
-
-            if(LoadedConfig.ToolVersion != version)
+            string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            if (LoadedConfig.ToolVersion != version)
             {
                 EmbeddedResourcesExtractor.ExtractAssets();
 
