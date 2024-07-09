@@ -1,4 +1,5 @@
 ﻿using DotNext.Collections.Generic;
+using ERModsMerger.Core.Formats;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace ERModsMerger.Core
     internal class MergeableFilesDispatcher
     {
         List<FileToMerge> FilesToMerge {  get; set; }
-        List<FileConflict> Conflicts { get; set; }
+        public List<FileConflict> Conflicts { get; set; }
 
         public MergeableFilesDispatcher()
         {
@@ -39,14 +40,13 @@ namespace ERModsMerger.Core
 
         public void MergeAllConflicts(bool manualConflictsResolving)
         {
-            string[] supportedFormats = { "regulation.bin", ".emevd.dcx" };
-
             foreach (var conflict in Conflicts)
             {
                 switch(conflict.FilesToMerge[0].ModRelativePath)
                 {
                     case string a when a.Contains("regulation.bin"): RegulationBin.MergeRegulations(conflict.FilesToMerge, manualConflictsResolving); break;
-                    //case string a when a.Contains(".emevd.dcx"): Formats.EMEVD_DCX.MergeFiles(conflict.FilesToMerge); break; //WIP
+                    case string a when a.Contains(".emevd.dcx"): EMEVD_DCX.MergeFiles(conflict.FilesToMerge); break; //WIP //to be tested
+                    case string a when a.Contains(".msgbnd.dcx"): MSGBND_DCX.MergeFiles(conflict.FilesToMerge); break; //WIP //to be tested
                 }
             }
         }
@@ -62,7 +62,10 @@ namespace ERModsMerger.Core
         {
             Path = path;
             var splittedPath = Path.Split('\\');
-            ModRelativePath = splittedPath.Skip(2).ToString("\\");
+
+            var toSkip = ModsMergerConfig.LoadedConfig.ModsToMergeFolderPath.Split("\\").Count() +1;
+
+            ModRelativePath = splittedPath.Skip(toSkip).ToString("\\");
         }
     }
 
@@ -70,9 +73,20 @@ namespace ERModsMerger.Core
     {
         public List<FileToMerge> FilesToMerge { get; set; }
 
+        public bool SupportedFormat { get; set; }
+
         public FileConflict(List<FileToMerge> filesToMerge)
         {
             FilesToMerge = filesToMerge;
+
+            switch(FilesToMerge[0].ModRelativePath)
+            {
+                case string a when a.Contains("regulation.bin"): SupportedFormat = true; break;
+                case string a when a.Contains(".msgbnd.dcx"): SupportedFormat = true; break;
+                //case string a when a.Contains(".emevd.dcx"): SupportedFormat = true; break;
+                default: SupportedFormat = false; break;
+            }
+
         }
 
     }

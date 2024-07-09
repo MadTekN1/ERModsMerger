@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="ERModsManager.UCs.ConfigUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ERModsManager.UCs"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="400" Background="{DynamicResource WindowBrush}"  FontFamily="Liberation Sans"  BorderBrush="#33FFFFFF" BorderThickness="0,1,0,1">
+    <Grid>
+        <StackPanel Orientation="Vertical" Margin="10,10,10,10">
+            <Label Foreground="{DynamicResource WindowTextBrush}" FontSize="17" FontWeight="Bold" Margin="0,0,0,20">Configs</Label>
+            <Label x:Name="labelVersion" Foreground="{DynamicResource WindowTextBrush}" FontSize="14" FontWeight="Bold" Margin="0,0,0,20">Version</Label>
+
+            <Grid Margin="0,0,0,20">
+                <Label Foreground="{DynamicResource WindowTextBrush}" FontSize="14" FontWeight="Bold">Game Path:</Label>
+                <Label FlowDirection="RightToLeft" x:Name="LabelGamePath" Foreground="{DynamicResource WindowTextBrush}" FontSize="12" VerticalAlignment="Center" Margin="90,2,40,0">I AM THE LABEL WHERE THE GAME IS AND I AM VERY VERY VERY VERY LONG</Label>
+                <Button x:Name="BtnGamePath" HorizontalAlignment="Right" Width="30" Click="BtnGamePath_Click">...</Button>
+            </Grid>
+            <Button x:Name="BtnOpenAppData" Height="30" Click="BtnOpenAppData_Click">Open local folder</Button>
+            
+            
+        </StackPanel> 
+    </Grid>
+</UserControl>

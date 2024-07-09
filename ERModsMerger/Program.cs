@@ -1,26 +1,19 @@
 ﻿using ERModsMerger;
 using ERModsMerger.Core;
-using System.Reflection;
 using System.Text;
 
 Console.OutputEncoding = Encoding.UTF8;
 
 string[] arguments = args;
 
+LOG.ConsoleOutput = true;
 
-if (ModsMergerConfig.LoadedConfig == null)
-    ModsMergerConfig.LoadConfig();
+ModsMergerConfig.LoadConfig();
 
 //save the loaded config, this add any new field when app is updated
 if (ModsMergerConfig.LoadedConfig != null)
     ModsMergerConfig.SaveConfig();
 
-
-//look for Oodle dll
-if(!File.Exists("ERModsMergerConfig\\oo2core_6_win64.dll") && ModsMergerConfig.LoadedConfig != null && File.Exists(ModsMergerConfig.LoadedConfig.GamePath + "\\oo2core_6_win64.dll"))
-{
-    File.Copy(ModsMergerConfig.LoadedConfig.GamePath + "\\oo2core_6_win64.dll", "ERModsMergerConfig\\oo2core_6_win64.dll");
-}
 
 if (arguments.Contains("/merge"))
 {
@@ -28,7 +21,7 @@ if (arguments.Contains("/merge"))
     Console.WriteLine("Welcome to Elden Ring Mods Merger!\n");
     Console.ResetColor();
 
-    ModsMerger.StartMerge();
+    ModsMerger.StartMerge(false, false);
     goto End;
 }
 
@@ -58,15 +51,17 @@ if (!File.Exists("ERModsMergerConfig\\config.json"))
     ModsMergerConfig config = new ModsMergerConfig();
     ModsMergerConfig.LoadedConfig = config;
 
+    /*
     // search for elden ring path
     var pathEldenRing = Utils.GetInstallPath("ELDEN RING"); // return C:\\Program Files (x86)\\Steam\\steamapps\\common\\ELDEN RING
     if(pathEldenRing != null || pathEldenRing != "")
         ModsMergerConfig.LoadedConfig.GamePath = pathEldenRing + "\\Game";
+    */
 
     ModsMergerConfig.SaveConfig();
 
-    //extract embedded res
-    ExtractParamDefsEmbeddedResources();
+    //extract and unzip embedded res
+    EmbeddedResourcesExtractor.ExtractAssets();
 
     Directory.CreateDirectory(config.ModsToMergeFolderPath);
 
@@ -91,6 +86,23 @@ if (!File.Exists("ERModsMergerConfig\\config.json"))
     Console.ForegroundColor = ConsoleColor.DarkYellow;
     Console.WriteLine("Welcome to Elden Ring Mods Merger!\n");
     Console.ResetColor();
+}
+
+// config format error //reset it because the config should nnot be null at this point
+if (ModsMergerConfig.LoadedConfig == null) 
+{
+    Console.WriteLine("🔴  Detected a format error in config.json, the file has been reset to default\n");
+    ModsMergerConfig.LoadedConfig = new ModsMergerConfig();
+    ModsMergerConfig.SaveConfig();
+}
+
+if (!File.Exists(ModsMergerConfig.LoadedConfig.GamePath + "\\regulation.bin"))
+{
+    Console.WriteLine("🔴  Invalid Game Path in ERModsMergerConfig\\config.json\n    " +
+        "Please modify the configuration file and enter the correct path.\n    " +
+        "Respect the format and don't forget to add double \\\\ between each folders.\n    " +
+        "Save it and relaunch this tool.\n");
+
 }
 
 
@@ -202,31 +214,6 @@ else
     goto Start;
 }
 
-
-
-
-void ExtractParamDefsEmbeddedResources()
-{
-    if (!Directory.Exists("ERModsMergerConfig\\ParamDefs"))
-        Directory.CreateDirectory("ERModsMergerConfig\\ParamDefs");
-
-
-    string[] resNames = Assembly.GetAssembly(typeof(ERModsMerger.Core.ModsMerger)).GetManifestResourceNames();
-    foreach (string resName in resNames)
-    {
-        if(resName.Contains("ERModsMerger.Core.ERModsMergerConfig.ParamDefs."))
-        {
-            string fileName = resName.Replace("ERModsMerger.Core.ERModsMergerConfig.ParamDefs.", "");
-            string filePath = "ERModsMergerConfig\\ParamDefs\\" + fileName;
-
-            using (var stream = Assembly.GetAssembly(typeof(ERModsMerger.Core.ModsMerger)).GetManifestResourceStream(resName))
-            using (StreamReader reader = new StreamReader(stream))
-            {
-                File.WriteAllText(filePath, reader.ReadToEnd());
-            }
-        }
-    }
-}
 
 void DisplayCurrentConfig()
 {

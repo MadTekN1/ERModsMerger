@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace SoulsFormats;
@@ -20,11 +21,17 @@ public class Oodle
         {
             return true;
         }
-        if (Path.Exists($@"{Directory.GetCurrentDirectory()}\ERModsMergerConfig\oo2core_6_win64.dll"))
+        if (Path.Exists($@"{Directory.GetCurrentDirectory()}\oo2core_6_win64.dll"))
         {
             Oodle6Exists = true;
             return true;
         }
+
+        //check env var
+        var envPaths = Environment.GetEnvironmentVariable("PATH").Split(';');
+        if (envPaths.Any(x => File.Exists(x + "\\oo2core_6_win64.dll")))
+            return true;
+
         return false;
     }
 
@@ -34,11 +41,18 @@ public class Oodle
         {
             return true;
         }
-        if (Path.Exists($@"{Directory.GetCurrentDirectory()}\ERModsMergerConfig\oo2core_8_win64.dll"))
+        if (Path.Exists($@"{Directory.GetCurrentDirectory()}\oo2core_8_win64.dll"))
         {
             Oodle8Exists = true;
             return true;
         }
+
+        //check env var
+        var envPaths = Environment.GetEnvironmentVariable("PATH").Split(';');
+        if (envPaths.Any(x => File.Exists(x + "\\oo2core_8_win64.dll")))
+            return true;
+
+
         return false;
     }
 

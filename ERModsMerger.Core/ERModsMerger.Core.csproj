@@ -12,7 +12,9 @@
 	  <TargetFramework>net8.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<UseWPF>true</UseWPF>
+  
+</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<GenerateAssemblyInfo>True</GenerateAssemblyInfo>
@@ -22,7 +24,7 @@
 
 
 	<ItemGroup>
-		<EmbeddedResource CopyToOutputDirectory="never" Include="..\Assets\ParamDefs\**" Link="ERModsMergerConfig\ParamDefs\%(RecursiveDir)%(Filename)%(Extension)" />
+		<EmbeddedResource CopyToOutputDirectory="never" Include="..\Assets\Assets.zip" Link="ERModsMergerAssets\%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
 
 	

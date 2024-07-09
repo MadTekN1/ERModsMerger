@@ -56,7 +56,7 @@ namespace SoulsFormats
         /// <param name="lrm">= NULL</param>
         /// <param name="scratchMem">= NULL</param>
         /// <param name="scratchSize">= 0</param>
-        [DllImport("ERModsMergerConfig\\oo2core_8_win64.dll", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("oo2core_8_win64.dll", CallingConvention = CallingConvention.StdCall)]
         private static extern unsafe long OodleLZ_Compress(
             Oodle.OodleLZ_Compressor compressor,
             byte* rawBuf,
@@ -77,7 +77,7 @@ namespace SoulsFormats
 
         /// <param name="compressor">= OodleLZ_Compressor_Invalid</param>
         /// <param name="lzLevel">= OodleLZ_CompressionLevel_Normal</param>
-        [DllImport("ERModsMergerConfig\\oo2core_8_win64.dll", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("oo2core_8_win64.dll", CallingConvention = CallingConvention.StdCall)]
         public static extern IntPtr OodleLZ_CompressOptions_GetDefault();
 
         /// <param name="compBuf"></param>
@@ -94,7 +94,7 @@ namespace SoulsFormats
         /// <param name="decoderMemory">= NULL</param>
         /// <param name="decoderMemorySize">= 0</param>
         /// <param name="threadPhase">= OodleLZ_Decode_Unthreaded</param>
-        [DllImport("ERModsMergerConfig\\oo2core_8_win64.dll", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("oo2core_8_win64.dll", CallingConvention = CallingConvention.StdCall)]
         private static extern unsafe long OodleLZ_Decompress(
             byte* compBuf,
             long compBufSize,
@@ -118,13 +118,13 @@ namespace SoulsFormats
                 IntPtr.Zero, 0, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, 0, Oodle.OodleLZ_Decode_ThreadPhase.OodleLZ_Decode_Unthreaded);
 
 
-        [DllImport("ERModsMergerConfig\\oo2core_8_win64.dll", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("oo2core_8_win64.dll", CallingConvention = CallingConvention.StdCall)]
         private static extern long OodleLZ_GetCompressedBufferSizeNeeded(
                 byte unk,
                 long rawSize);
 
 
-        [DllImport("ERModsMergerConfig\\oo2core_8_win64.dll", CallingConvention = CallingConvention.StdCall)]
+        [DllImport("oo2core_8_win64.dll", CallingConvention = CallingConvention.StdCall)]
         private static extern long OodleLZ_GetDecodeBufferSize(
             byte unk,
             long rawSize,

@@ -40,4 +40,4 @@ Run this app with /merge argument to automatically merge mods located inside Mod
 ## Credits & Thanks
 * [SoulsMods](https://github.com/soulsmods)
 * [Smithbox](https://github.com/vawser/Smithbox)
-* Also big Thanks to all the Souls [modding community](https://discord.gg/ZCxzcxp6)
+* Also big Thanks to all the Souls [modding community](https://discord.gg/servername)

@@ -1,0 +1,20 @@
+﻿<UserControl x:Class="ERModsManager.UCs.ModItemUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ERModsManager.UCs"
+             mc:Ignorable="d" 
+             d:DesignHeight="50" d:DesignWidth="400" Height="50" FontFamily="Liberation Sans" Margin="5,5,5,5" Background="#be000000">
+    <Grid>
+        <Border BorderBrush="{DynamicResource WindowTextBrush}" BorderThickness="1" CornerRadius="4"/>
+
+        <CheckBox x:Name="CheckBoxEnableMod" ToolTip="Enable / Disable this mod" IsChecked="{Binding ModEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="10,0,0,0" Checked="CheckBoxEnableMod_Changed" Unchecked="CheckBoxEnableMod_Changed" />
+
+        <Label ToolTip="Drag this mod up or down to change his priority &#x0a;Top is highest, bottom is lowest" Content="{Binding ModName}" Foreground="{DynamicResource WindowTextBrush}" VerticalAlignment="Center" FontSize="15" Margin="40,0,10,0"/>
+        
+        <Button ToolTip="Delete this mod" Cursor="Hand" x:Name="DeleteModFromListBtn" HorizontalAlignment="Right" VerticalAlignment="Center" Width="25" Height="25" Margin="0,0,15,0" Click="DeleteModFromListBtn_Click">
+            <Image Source="{StaticResource close_squareDrawingImage}"/>
+        </Button>
+    </Grid>
+</UserControl>

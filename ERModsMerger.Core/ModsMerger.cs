@@ -1,26 +1,32 @@
 ﻿using DotNext.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using System.IO;
+using ERModsMerger.Core.Utility;
 
 namespace ERModsMerger.Core
 {
-    public static class ModsMerger
+    public class ModsMerger
     {
-        public static void StartMerge(bool manualConflictResolving = false)
+        public static void StartMerge(bool manualConflictResolving = false, bool requestUserConfirmations = true)
         {
 
-            Console.WriteLine("LOG: Retrieve config");
+            LOG.Log("Retrieve config");
 
-            ModsMergerConfig config = ModsMergerConfig.LoadConfig();
+            ModsMergerConfig config = ModsMergerConfig.LoadedConfig;
 
             if (config == null)
             {
-                Console.WriteLine("⚠ Could not load Config at ERModsMergerConfig\\config.json\n⚠ If you have made modifications, please verify if everything is correct.");
+                LOG.Log("Could not load Config at ERModsMergerConfig\\config.json\n   If you have made modifications, please verify if everything is correct.",
+                        LOGTYPE.ERROR);
+
+                OnMergeFinish(true);
                 return;
             }
 
-            Console.WriteLine("LOG: Config loaded\n");
+            LOG.Log("Config loaded\n");
 
-            Console.WriteLine("-- START MERGING --\n");
+            LOG.Log("-- START MERGING --\n");
 
 
             string[] dirs = Directory.GetDirectories(config.ModsToMergeFolderPath);
@@ -28,24 +34,19 @@ namespace ERModsMerger.Core
             {
                 List<string> modsDirectories = dirs.OrderByDescending(q => q).ToList();
 
-                Console.Write("\nLOG: Initial directories merge");
-
-                if(Directory.Exists(config.MergedModsFolderPath))
-                    Directory.Delete(config.MergedModsFolderPath, true);
-
-                Directory.CreateDirectory(config.MergedModsFolderPath);
-
-                foreach (string modsDirectory in modsDirectories)
-                    CopyDirectory(modsDirectory, config.MergedModsFolderPath);
-
-                Console.Write(" - Done\n\n");
+                //if mods are present in config with special order, change modsDirectories
+                if (ModsMergerConfig.LoadedConfig.Mods.Count > 0)
+                {
+                    modsDirectories = new List<string>();
+                    ModsMergerConfig.LoadedConfig.Mods.FindAll(x => x.Enabled).ForEach((x) => { modsDirectories.Insert(0,x.Path); });
+                }
 
 
                 //Search all files in directories, add them to the dispatcher and then search which files are conflicting
                 var dispatcher = new MergeableFilesDispatcher();
                 var allFiles = new List<string>();
                 foreach (string modsDirectory in modsDirectories)
-                    FindAllFiles(modsDirectory, ref allFiles, true);
+                    Utils.FindAllFiles(modsDirectory, ref allFiles, true);
 
                 foreach (string file in allFiles)
                     dispatcher.AddFile(file);
@@ -53,61 +54,75 @@ namespace ERModsMerger.Core
                 dispatcher.SearchForConflicts();
 
                 
+                var unsuportedFilesConflicts = dispatcher.Conflicts.FindAll(x => !x.SupportedFormat);
+                if (unsuportedFilesConflicts.Count > 0)
+                {
+                    LOG.Log($"{unsuportedFilesConflicts.Count} unsupported conflict(s) found:\n",
+                        LOGTYPE.WARNING);
+
+                    foreach (var conflict in unsuportedFilesConflicts)
+                    {
+                        LOG.Log("- " + conflict.FilesToMerge[0].ModRelativePath + ":",
+                            LOGTYPE.WARNING);
+                        conflict.FilesToMerge.ForEach((x) => { Console.WriteLine("      - " + x.Path); });
+                        Console.WriteLine();
+                    }
+                        
+
+                    if(requestUserConfirmations)
+                    {
+                        var answer = LOG.QueryUserYesNoQuestion("Due to unsuported conflicts, some file(s) will be completely overwriten and this will potentially cause in-game issues. Are you sure you want to continue?");
+
+                        if (!answer)
+                        {
+                            OnMergeFinish(true);
+                            return;
+                        }
+                            
+                    }
+                }
+
+                Console.WriteLine();
+
+                LOG.Log("Initial directories merge");
+
+                if(Directory.Exists(config.MergedModsFolderPath))
+                    Directory.Delete(config.MergedModsFolderPath, true);
+
+                Directory.CreateDirectory(config.MergedModsFolderPath);
+
+                foreach (string modsDirectory in modsDirectories)
+                    Utils.CopyDirectory(modsDirectory, config.MergedModsFolderPath);
+
+
+
                 dispatcher.MergeAllConflicts(manualConflictResolving);
 
                 
             }
             else
             {
-                Console.WriteLine($"⚠ No mod folder(s) could be found in {config.ModsToMergeFolderPath}\n⚠ Verify if everything is placed well like in example.\n⚠ Relaunch and look at example to see expected folders placement.");
+                LOG.Log($"No mod folder(s) could be found in {config.ModsToMergeFolderPath}\n⚠ Verify if everything is placed well like in example.\n⚠ Relaunch and look at example to see expected folders placement.",
+                    LOGTYPE.ERROR);
             }
 
             
 
+            OnMergeFinish(true);
         }
 
-        static void FindAllFiles(string path, ref List<string> files, bool searchInSubDirectories)
+        public delegate void MergeFinishEventHandler(bool finished);
+
+        public static event MergeFinishEventHandler MergeFinish;
+
+        protected static void OnMergeFinish(bool finished)
         {
-            files.AddAll(Directory.GetFiles(path).ToList());
-            if (searchInSubDirectories && Directory.GetDirectories(path).Length > 0)
+            if (MergeFinish != null)
             {
-                foreach(var directory in Directory.GetDirectories(path))
-                    FindAllFiles(directory, ref files, searchInSubDirectories);
+                MergeFinish(true);
             }
         }
 
 
-        static void CopyDirectory(string sourceDir, string destinationDir, bool recursive = true)
-        {
-            // Get information about the source directory
-            var dir = new DirectoryInfo(sourceDir);
-
-            // Check if the source directory exists
-            if (!dir.Exists)
-                throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
-
-            // Cache directories before we start copying
-            DirectoryInfo[] dirs = dir.GetDirectories();
-
-            // Create the destination directory
-            Directory.CreateDirectory(destinationDir);
-
-            // Get the files in the source directory and copy to the destination directory
-            foreach (FileInfo file in dir.GetFiles())
-            {
-                string targetFilePath = Path.Combine(destinationDir, file.Name);
-                file.CopyTo(targetFilePath, true);
-            }
-
-            // If recursive and copying subdirectories, recursively call this method
-            if (recursive)
-            {
-                foreach (DirectoryInfo subDir in dirs)
-                {
-                    string newDestinationDir = Path.Combine(destinationDir, subDir.Name);
-                    CopyDirectory(subDir.FullName, newDestinationDir, true);
-                }
-            }
-        }
     }
 }

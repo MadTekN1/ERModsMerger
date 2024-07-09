@@ -4,6 +4,8 @@
 
 - Game versions under 1.12 and Regulation versions under 1.12.2 cannot load the merged regulation.bin
 - Deprecated regulation files versions cannot be loaded in the app
+- Regulation - Modded new rows overwrited by another mods using same row IDs
+- Row Names issues
 
 ## ToDo
 
