@@ -1,7 +1,20 @@
-# ERModsMerger
-Simple tool to merge Elden Ring mods.
+# Elden Ring Mods Manager - Merger
+Simple tool to manage and merge Elden Ring mods. Work In Progress.
 
 Can only merge regulation.bin files for now (every other files will be overwrited depending of priority order), more merging capabilities will be added in the future.
+
+## Usage
+
+![](https://github.com/MadTekN1/ERModsMerger/blob/main/Documentation/Images/Manager%20Demo.gif?raw=true)
+- Place ERModsManager.exe wherever you want. Desktop for example.
+- If the app ask you the game path at launch, just navigate to where eldenring.exe is.
+- The fun part now, drag and drop your mods (can be .zip or folder) directly in the app (don't worry, the app will most likely handle it)
+- Then define mods priority by dragging them up or down in the list (top is highest)
+- Press Merge and wait the logs telling you the merge is done.
+- Press Play & Enjoy!
+
+# Elden Ring Mods Merger (Console App)
+
 ## Usage
 Highly recommended: Use [ModEngine2](https://github.com/soulsmods/ModEngine2), place ERModsMerger.exe in the same folder and edit config_eldenring.toml as follow:
 ```
@@ -35,9 +48,10 @@ For now it's better to use this tool to merge mods who only have conflicting reg
 
 ## Automation
 
-Run this app with /merge argument to automatically merge mods located inside ModsToMerge to MergedMods folder, no user interaction will be asked and the console will close after the merge.﻿﻿
+Run the console app with /merge argument to automatically merge mods located inside ModsToMerge to MergedMods folder, no user interaction will be asked and the console will close after the merge.﻿﻿
 
 ## Credits & Thanks
 * [SoulsMods](https://github.com/soulsmods)
 * [Smithbox](https://github.com/vawser/Smithbox)
+* [Nordgaren](https://github.com/Nordgaren)
 * Also big Thanks to all the Souls [modding community](https://discord.gg/servername)
