@@ -15,7 +15,11 @@ Can only merge regulation.bin files for now (every other files will be overwrite
 
 # Elden Ring Mods Merger (Console App)
 
+Console App version with merging and automation features.
+
 ## Usage
+![](https://github.com/MadTekN1/ERModsMerger/blob/main/Documentation/Images/Console%20Merger%20Demo.gif?raw=true)
+
 Highly recommended: Use [ModEngine2](https://github.com/soulsmods/ModEngine2), place ERModsMerger.exe in the same folder and edit config_eldenring.toml as follow:
 ```
 mods = [
