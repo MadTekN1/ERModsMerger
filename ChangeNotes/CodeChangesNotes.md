@@ -45,7 +45,7 @@
 - [x] Partial support for the merge of .emevd.dcx files
   - [ ] Internal events instructions conflicts merges
 
-- [x] Better Implementation for logs and user / console queries
+- [x] Better implementation for logs and user / console queries
  - [ ] Logs grouping
 - [x] Read content packed files in game folder instead of unpacking everything by using [BHD5Reader, thanks to Nordgaren](https://github.com/Nordgaren/ERBingoRandomizer/blob/main/src/ERBingoRandomizer/FileHandler/BHD5Reader.cs)
 - [x] handle oodle location in SoulsFormats depending of scenarios (console / WPF app)
@@ -60,6 +60,10 @@
   - [ ] Ask user when multiple versions (duplicates) is found
   - [ ] Ignore files that are not present in dictionary (readme, json project files, etc)
 - [ ] .csv merge support
+- [ ] Upgrade old regulation bin files using stored reg bin vanilla file of the same version
+- [ ] Better implementation for conflict merging
+  - [ ] Load and check conflicts for each files, when conflict is found add it to a class object
+  - [ ] When all files are loaded and checked, apply modifications
 
 
 ### Fixes
