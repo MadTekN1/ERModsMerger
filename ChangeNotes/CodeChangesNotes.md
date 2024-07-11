@@ -2,9 +2,8 @@
 
 ## ERModsManager
 <details>
-<summary>
-1.3.0-alpha
-</summary>
+<summary><h3>1.3.0-alpha</h3></summary>
+<br>
 
 - [x] Creation of the visual app
 - [x] File(s) Drag & Drop
@@ -20,7 +19,8 @@
 </details>
 
 <details open>
-<summary>1.3.1-alpha</summary>
+<summary><h3>1.3.1-alpha</h3></summary>
+<br>
 
 - [x] Config:
   - [ ] Custom location for ModsToMerge and MergedMods
@@ -41,24 +41,27 @@
   - [ ] Progress bar log type
   - [ ] Expandable logs (logs groups per merging file type)
   
-</details>
+
 
 ### Fixes
 
 - [ ] Crash when local files / folders are modified / deleted
   - [ ] Check files / folders at app launch (also before edits events) and update concerned config / profile accordingly
 
+</details>
 
 
 ## ERModsMerger.Core
 
+<details>
+<summary><h3>1.3.0-alpha</h3></summary>
+<br>
+
 - [x] Searches of unsuported conflicts + ask user confirmation to continue
 - [x] Initial support for the merge of .msgbnd.dcx files
 - [x] Partial support for the merge of .emevd.dcx files
-  - [ ] Internal events instructions conflicts merges
 
 - [x] Better implementation for logs and user / console queries
-  - [ ] Logs grouping
 - [x] Read content packed files in game folder instead of unpacking everything by using [BHD5Reader, thanks to Nordgaren](https://github.com/Nordgaren/ERBingoRandomizer/blob/main/src/ERBingoRandomizer/FileHandler/BHD5Reader.cs)
 - [x] handle oodle location in SoulsFormats depending of scenarios (console / WPF app)
 - [x] UnPack/UnZip embedded resources to AppData
@@ -66,6 +69,16 @@
   - [x] Dictionaries
   - [x] ParamDefs
   - [x] Pre-configured modengine as embedded resource
+  
+</details>
+
+<details open>
+<summary><h3>1.3.1-alpha</h3></summary>
+<br>
+
+- [x] Better implementation for logs and user / console queries
+  - [ ] Logs grouping
+- [ ] Internal events instructions conflicts merges
 - [ ] Detect & Handle .dll mods, editing modengine config_eldenring.toml accordingly
   - [ ] ini integration
 - [x] (UnZip mods and) search in arborescences, align to correct paths using [EldenRingDictonnary.txt, thanks to Nordgaren again](https://github.com/Nordgaren/UXM-Selective-Unpack/blob/master/UXM/res/EldenRingDictionary.txt)
@@ -81,3 +94,5 @@
 ### Fixes
 
 - [ ] Vanilla dcx not loading
+
+</details>
