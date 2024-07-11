@@ -1,6 +1,10 @@
 # Changes for 1.3.x-alpha
 
 ## ERModsManager
+<details>
+<summary>
+1.3.0-alpha
+</summary>
 
 - [x] Creation of the visual app
 - [x] File(s) Drag & Drop
@@ -10,9 +14,16 @@
 - [x] Config:
   - [x] Re-set game path (file dialog)
   - [x] Open local app data folder
-  - [ ] Custom location for ModsToMerge and MergedMods
 - [x] Help & Credits
 - [x] Save actives mods & arrangements (priorities) in config
+
+</details>
+
+<details open>
+<summary>1.3.1-alpha</summary>
+
+- [x] Config:
+  - [ ] Custom location for ModsToMerge and MergedMods
 - [ ] Enable / Disable all mods
 - [ ] Expandable mods
   - [ ] Add / modify note
@@ -23,13 +34,14 @@
   - [ ] Save the content of MergedMods in SavesMergedMods after a merge and add in it a json object that relates merge details (mods, conflicts)
 - [ ] Profiles
   - [ ] Dropdown list for loading or add new merge / config profiles
-  - [ ] Inform user when he try to launch the game before the selected profile is not ready (not merged)
+  - [ ] Inform user when he try to launch the game before the selected profile is ready (not merged)
 - [ ] Better logs
   - [ ] Logs presented in a list instead of textblock
   - [ ] Colorized icons for different log types
   - [ ] Progress bar log type
   - [ ] Expandable logs (logs groups per merging file type)
   
+</details>
 
 ### Fixes
 
@@ -46,7 +58,7 @@
   - [ ] Internal events instructions conflicts merges
 
 - [x] Better implementation for logs and user / console queries
- - [ ] Logs grouping
+  - [ ] Logs grouping
 - [x] Read content packed files in game folder instead of unpacking everything by using [BHD5Reader, thanks to Nordgaren](https://github.com/Nordgaren/ERBingoRandomizer/blob/main/src/ERBingoRandomizer/FileHandler/BHD5Reader.cs)
 - [x] handle oodle location in SoulsFormats depending of scenarios (console / WPF app)
 - [x] UnPack/UnZip embedded resources to AppData
