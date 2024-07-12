@@ -17,18 +17,69 @@ namespace ERModsManager.UCs
         {
             InitializeComponent();
 
-            foreach(var mod in ModsMergerConfig.LoadedConfig.Mods)
+            CreateModList();
+        }
+
+        /// <summary>
+        /// Create the mod list based on the config file, if some mods doesn't exist in folders, update mod list config and save
+        /// </summary>
+        private void CreateModList()
+        {
+            if (ModsMergerConfig.LoadedConfig != null)
             {
-                var modItem = new ModItemUC();
-                modItem.ModName = mod.Name;
-                modItem.CurrentPath = mod.Path;
-                modItem.ModEnabled = mod.Enabled;
-                modItem.ModDeleted += ModItem_ModDeleted;
-                modItem.MouseDown += ModItem_MouseDown;
-                modItem.ModEnabledChanged += ModItem_ModEnabledChanged;
-                ModsListStackPanel.Children.Add(modItem);
+                var toRemove = new List<ModConfig>();
+
+                foreach(var modConfig in  ModsMergerConfig.LoadedConfig.Mods)
+                {
+                    if (Directory.Exists(modConfig.Path))
+                    {
+                        AddModToList(modConfig);
+                    }
+                    else
+                    {
+                        toRemove.Add(modConfig);
+                    }
+                }
+
+                //delete mods if needed
+                foreach (var mod in toRemove)
+                    ModsMergerConfig.LoadedConfig.Mods.Remove(mod);
+
+                ModsMergerConfig.LoadedConfig.Save();
             }
         }
+
+        private ModItemUC AddModToList(ModConfig modConfig, bool isNew = false)
+        {
+            var modItem = new ModItemUC();
+            modItem.ModName = modConfig.Name;
+            modItem.CurrentPath = modConfig.Path;
+            modItem.ModEnabled = modConfig.Enabled;
+            modItem.ModConfig = modConfig;
+            if (modConfig.Note != "")
+                modItem.txtAddNote.Text = modConfig.Note;
+
+            modItem.ModDeleted += ModItem_ModDeleted;
+            modItem.MouseDown += ModItem_MouseDown;
+            modItem.ModEnabledChanged += ModItem_ModEnabledChanged;
+
+            modItem.FileTree.ModFileConfigs = modConfig.ModFiles;
+            modItem.FileTree.Load(modConfig.Path);
+
+            ModsListStackPanel.Children.Add(modItem);
+
+            if(isNew)
+            {
+                ModsMergerConfig.LoadedConfig.Mods.Add(modConfig);
+                modItem.ModConfig = ModsMergerConfig.LoadedConfig.Mods.Last();
+                ModsMergerConfig.LoadedConfig.Save();
+            }
+            
+
+
+            return modItem;
+        }
+
 
         private void UserControl_DragEnter(object sender, DragEventArgs e)
         {
@@ -52,6 +103,10 @@ namespace ERModsManager.UCs
 
                     if(FIlesTreeAligner.TryAlignAndCopyToModsToMerge(file, nameNoExt))
                     {
+                        var modConfig = new ModConfig(nameNoExt, ModsMergerConfig.LoadedConfig.AppDataFolderPath + "\\ModsToMerge\\" + nameNoExt, true);
+                        var modItem = AddModToList(modConfig, true);
+
+                        /*
                         var modItem = new ModItemUC();
                         modItem.ModName = nameNoExt;
                         modItem.InitialFilePath = file;
@@ -59,10 +114,14 @@ namespace ERModsManager.UCs
                         modItem.ModDeleted += ModItem_ModDeleted;
                         modItem.MouseDown += ModItem_MouseDown;
                         modItem.ModEnabledChanged += ModItem_ModEnabledChanged;
+
+                        modItem.fileTreeUc.Load(modItem.CurrentPath);
+
                         ModsListStackPanel.Children.Add(modItem);
 
                         ModsMergerConfig.LoadedConfig.Mods.Add(new ModConfig(modItem.ModName, modItem.CurrentPath, true));
-                        ModsMergerConfig.SaveConfig(Global.ConfigFilePath);
+                        modItem.ModConfig = ModsMergerConfig.LoadedConfig.Mods.Last();
+                        ModsMergerConfig.LoadedConfig.Save();*/
                     }
                     else // nope
                     {
@@ -108,7 +167,9 @@ namespace ERModsManager.UCs
             {
                 ModItemUC item = ((ModItemUC) sender);
                 ModsListStackPanel.Children.Remove(item);
-                Directory.Delete(item.CurrentPath, true);
+
+                if(Directory.Exists(item.CurrentPath))
+                    Directory.Delete(item.CurrentPath, true);
 
                 ModsMergerConfig.LoadedConfig.Mods.RemoveAll(x=>x.Name==item.ModName);
                 ModsMergerConfig.SaveConfig(Global.ConfigFilePath);
@@ -190,9 +251,6 @@ namespace ERModsManager.UCs
             this.Cursor = Cursors.Arrow;
             MoveableModItemUC.Background = new SolidColorBrush(Color.FromArgb(190, 0, 0, 0));
         }
-
-
-       
 
     }
 }

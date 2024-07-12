@@ -354,4 +354,53 @@
         </DrawingImage.Drawing>
     </DrawingImage>
 
+    <DrawingImage x:Key="form_dropdownDrawingImage">
+        <DrawingImage.Drawing>
+            <DrawingGroup ClipGeometry="M0,0 V24 H24 V0 H0 Z">
+                <GeometryDrawing Brush="{DynamicResource WindowTextBrush}" Geometry="F1 M24,24z M0,0z M10,15L22,15 22,16 10,16z M6,12L8,12 8,10 6,10z M10,11L22,11 22,10 10,10z M6,17L8,17 8,15 6,15z M10,21L22,21 22,20 10,20z M6,22L8,22 8,20 6,20z M23,3L23,6A1.001,1.001,0,0,1,22,7L2,7A1.001,1.001,0,0,1,1,6L1,3A1.001,1.001,0,0,1,2,2L22,2A1.001,1.001,0,0,1,23,3z M22.001,6L22,6 22,3 2,3 2,6 22.001,6z" />
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
+    <DrawingImage x:Key="folderDrawingImage">
+        <DrawingImage.Drawing>
+            <DrawingGroup ClipGeometry="M0,-3.5 V28.5 H32 V0 H-3.5 Z">
+                <DrawingGroup.Transform>
+                    <TranslateTransform X="0" Y="3.5" />
+                </DrawingGroup.Transform>
+                <GeometryDrawing Geometry="F0 M32,32z M0,0z M2.90909,0L11.2834,0C12.4407,0,13.5506,0.459739,14.369,1.27808L14.7219,1.63101C15.5402,2.44935,16.6502,2.90909,17.8074,2.90909L23.2727,2.90909C24.0761,2.90909 24.7617,3.1931 25.3297,3.76115 25.8977,4.32918 26.1818,5.01487 26.1818,5.81818L26.1818,21.8182C26.1818,22.6215 25.8977,23.3072 25.3297,23.8752 24.7617,24.4432 24.0761,24.7273 23.2727,24.7273L2.90909,24.7273C2.10576,24.7273 1.42009,24.4432 0.852052,23.8752 0.284017,23.3072 0,22.6215 0,21.8182L0,2.90909C0,2.10576 0.284017,1.42009 0.852052,0.852052 1.42009,0.284017 2.10576,0 2.90909,0z">
+                    <GeometryDrawing.Brush>
+                        <LinearGradientBrush StartPoint="16,0" EndPoint="16,16.3543" MappingMode="Absolute" SpreadMethod="Pad" Opacity="1">
+                            <GradientStop Color="#FFFBA200" Offset="0" />
+                            <GradientStop Color="#FFFF7300" Offset="1" />
+                        </LinearGradientBrush>
+                    </GeometryDrawing.Brush>
+                </GeometryDrawing>
+                <GeometryDrawing Geometry="F0 M32,32z M0,0z M5.81818,21.8182L5.81818,8.72727C5.81818,7.92395 6.1022,7.23827 6.67024,6.67023 7.23827,6.1022 7.92395,5.81818 8.72727,5.81818L29.0909,5.81818C29.8942,5.81818 30.5799,6.1022 31.1479,6.67023 31.716,7.23827 32,7.92395 32,8.72727L32,21.8182C32,22.6215 31.716,23.3072 31.1479,23.8752 30.5799,24.4432 29.8942,24.7273 29.0909,24.7273L2.90909,24.7273C3.71241,24.7273 4.3981,24.4432 4.96612,23.8752 5.53417,23.3072 5.81818,22.6215 5.81818,21.8182z">
+                    <GeometryDrawing.Brush>
+                        <LinearGradientBrush StartPoint="17.4545,5.81818" EndPoint="17.4545,24.7273" MappingMode="Absolute" SpreadMethod="Pad" Opacity="1">
+                            <GradientStop Color="#FFFAC227" Offset="0" />
+                            <GradientStop Color="#FFFAA627" Offset="1" />
+                        </LinearGradientBrush>
+                    </GeometryDrawing.Brush>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
+    <DrawingImage x:Key="fileDrawingImage">
+        <DrawingImage.Drawing>
+            <DrawingGroup ClipGeometry="M0,0 V24 H24 V0 H0 Z">
+                <DrawingGroup Opacity="1" Transform="1,0,0,1,0,-1028.4">
+                    <GeometryDrawing Brush="#FF95A5A6" Geometry="F1 M24,24z M0,0z M5,1030.4C3.8954,1030.4,3,1031.3,3,1032.4L3,1040.4 3,1044.4 3,1050.4C3,1051.5,3.8954,1052.4,5,1052.4L19,1052.4C20.105,1052.4,21,1051.5,21,1050.4L21,1044.4 21,1040.4 21,1036.4 15,1030.4 5,1030.4z" />
+                    <GeometryDrawing Brush="#FFBDC3C7" Geometry="F1 M24,24z M0,0z M5,1029.4C3.8954,1029.4,3,1030.3,3,1031.4L3,1039.4 3,1043.4 3,1049.4C3,1050.5,3.8954,1051.4,5,1051.4L19,1051.4C20.105,1051.4,21,1050.5,21,1049.4L21,1043.4 21,1039.4 21,1035.4 15,1029.4 5,1029.4z" />
+                    <GeometryDrawing Brush="#FF95A5A6" Geometry="F1 M24,24z M0,0z M21,1035.4L15,1029.4 15,1033.4C15,1034.5,15.895,1035.4,17,1035.4L21,1035.4z" />
+                    <DrawingGroup Transform="1,0,0,1,0,1028.4">
+                        <GeometryDrawing Brush="#FF95A5A6" Geometry="F1 M24,24z M0,0z M6,8L6,9 18,9 18,8 6,8z M6,11L6,12 18,12 18,11 6,11z M6,14L6,15 18,15 18,14 6,14z M6,17L6,18 18,18 18,17 6,17z" />
+                    </DrawingGroup>
+                </DrawingGroup>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
 </ResourceDictionary>

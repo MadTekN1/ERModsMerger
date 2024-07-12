@@ -15,6 +15,7 @@
                                 WindowStartupLocation="CenterScreen"
                                TextOptions.TextFormattingMode="Display"
                                TextOptions.TextRenderingMode="ClearType"
+                               SnapsToDevicePixels="True"
                                Background="{DynamicResource WindowBrush}"
                                Style="{StaticResource {x:Type controlzex:WindowChromeWindow}}"
                                MouseDown="WindowChromeWindow_MouseDown"

@@ -1,0 +1,22 @@
+﻿<UserControl x:Class="ERModsManager.UCs.FileTreeUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ERModsManager.UCs"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="400" FontFamily="Liberation Sans">
+    <Grid VerticalAlignment="Top">
+        <Grid x:Name="Header" Background="Transparent" VerticalAlignment="Top" MouseUp="Header_MouseUp" MouseDown="Header_MouseDown">
+            <CheckBox x:Name="CheckBoxEnableFileFolder" ToolTip="Enable / Disable this folder / file" IsChecked="{Binding FileEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="5,0,0,0" VerticalAlignment="Top" Click="CheckBoxEnableFileFolder_Click" />
+            <Image x:Name="imgFolder" Visibility="Visible" Source="{DynamicResource folderDrawingImage}" Height="20" Margin="40,6,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+            <Image x:Name="imgFile" Visibility="Hidden" Source="{DynamicResource fileDrawingImage}" Height="20" Margin="40,6,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+            <Label x:Name="HeaderName" Foreground="{DynamicResource WindowTextBrush}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="65,5,0,0">Mod1</Label>
+        </Grid>
+
+        <StackPanel x:Name="StackPanelSubFileTree" Margin="30,30,0,0" VerticalAlignment="Top" Height="0">
+
+        </StackPanel>
+
+    </Grid>
+</UserControl>

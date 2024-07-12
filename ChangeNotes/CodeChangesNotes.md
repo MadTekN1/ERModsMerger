@@ -25,10 +25,11 @@
 - [x] Config:
   - [ ] Custom location for ModsToMerge and MergedMods
 - [ ] Enable / Disable all mods
-- [ ] Expandable mods
-  - [ ] Add / modify note
-  - [ ] Show files / folders tree
-    - [ ] Enable / Disable particular file / folder
+- [x] Expandable mods
+  - [x] Add / modify note
+  - [x] Show files / folders tree
+    - [x] Enable / Disable particular file / folder
+	- [x] Save in current config
 	- [ ] Highlight red / orange when file conflict is found (red = not supported and will be overwritten, orange = supported and internal merge will occur)
 - [ ] Re-Merge using precedent / saved merge(s)
   - [ ] Save the content of MergedMods in SavesMergedMods after a merge and add in it a json object that relates merge details (mods, conflicts)
@@ -43,11 +44,11 @@
   
 
 
-### Fixes
+#### Fixes
 
-- [ ] Crash when local files / folders are modified / deleted
-  - [ ] Check files / folders at app launch (also before edits events) and update concerned config / profile accordingly
-
+- [x] Crash when local files / folders are modified / deleted
+  - [x] Check files / folders at app launch (also before edits events) and update concerned config / profile accordingly
+- [x] Fixed a startup error: object reference not set to an instance of an object 
 </details>
 
 
@@ -78,6 +79,7 @@
 
 - [x] Better implementation for logs and user / console queries
   - [ ] Logs grouping
+- [ ] Check files / folders ignored by user in config
 - [ ] Internal events instructions conflicts merges
 - [ ] Detect & Handle .dll mods, editing modengine config_eldenring.toml accordingly
   - [ ] ini integration
@@ -91,7 +93,7 @@
   - [ ] When all files are loaded and checked, apply modifications
 
 
-### Fixes
+#### Fixes
 
 - [ ] Vanilla dcx not loading
 

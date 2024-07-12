@@ -43,7 +43,6 @@ namespace ERModsManager
 
             if(ModsMergerConfig.LoadedConfig == null)
             {
-                
                 ModsMergerConfig.LoadConfig(Global.ConfigFilePath);
                 ModsMergerConfig.SaveConfig(Global.ConfigFilePath); // save to apply eventual new properties
             }

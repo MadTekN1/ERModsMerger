@@ -23,9 +23,10 @@ namespace ERModsMerger.Core
             {
                 try
                 {
-                    
                     LoadedConfig = (ModsMergerConfig?)JsonSerializer.Deserialize(File.ReadAllText(pathConfigFile), typeof(ModsMergerConfig));
-                    
+
+                    LoadedConfig.ConfigPath = pathConfigFile;
+
                     CheckAndAddEnvVars();
                     CheckVersionAndEmbeddedExtraction();
                     return LoadedConfig;
@@ -69,6 +70,10 @@ namespace ERModsMerger.Core
             }
         }
 
+        /// <summary>
+        /// Save the current loaded config to the specified path
+        /// </summary>
+        /// <returns></returns>
         public static bool SaveConfig(string pathConfigFile = "ERModsMergerConfig\\config.json")
         {
             try
@@ -85,7 +90,6 @@ namespace ERModsMerger.Core
         }
 
 
-
         string _gamePath = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\ELDEN RING\\Game";
         public string GamePath { get { return _gamePath; } set { _gamePath = value; } }
 
@@ -99,17 +103,42 @@ namespace ERModsMerger.Core
         string _mergedModsFolderPath = "MergedMods";
         public string MergedModsFolderPath { get { return _mergedModsFolderPath; } set { _mergedModsFolderPath = value; } }
 
+        public string ConfigPath { get; set; }
+
         int _consolePrintDelay = 15;
         public int ConsolePrintDelay { get { return _consolePrintDelay; } set { _consolePrintDelay = value; } }
 
         string _toolVersion = "";
         public string ToolVersion { get { return _toolVersion; } set { _toolVersion = value; } }
 
+
+
         public List<ModConfig> Mods { get; set; }
 
         public ModsMergerConfig()
         {
             Mods = new List<ModConfig>();
+        }
+
+        public bool Save()
+        {
+            try
+            {
+                if(ConfigPath != "")
+                {
+                    JsonSerializerOptions options = new JsonSerializerOptions();
+                    options.WriteIndented = true;
+                    File.WriteAllText(ConfigPath, JsonSerializer.Serialize(LoadedConfig, typeof(ModsMergerConfig), options));
+                    return true;
+                }
+               
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            return false;
         }
     }
 
@@ -118,10 +147,27 @@ namespace ERModsMerger.Core
         public string Name { get; set; }
         public string Path { get; set; }
         public bool Enabled { get; set; }
+        public string Note { get; set; }
+
+        public List<ModFileConfig> ModFiles { get; set; }
 
         public ModConfig(string name, string path, bool enabled)
         {
             Name = name;
+            Path = path;
+            Enabled = enabled;
+            Note = "";
+            ModFiles = new List<ModFileConfig>();
+        }
+    }
+
+    public class ModFileConfig
+    {
+        public string Path { get; set; }
+        public bool Enabled { get; set; }
+
+        public ModFileConfig(string path, bool enabled = true)
+        {
             Path = path;
             Enabled = enabled;
         }

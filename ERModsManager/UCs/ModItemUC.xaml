@@ -5,16 +5,34 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ERModsManager.UCs"
              mc:Ignorable="d" 
-             d:DesignHeight="50" d:DesignWidth="400" Height="50" FontFamily="Liberation Sans" Margin="5,5,5,5" Background="#be000000">
-    <Grid>
+             d:DesignHeight="300" d:DesignWidth="400" Height="50" FontFamily="Liberation Sans" Margin="5,5,5,5" Background="#be000000">
+    <Grid VerticalAlignment="Top">
         <Border BorderBrush="{DynamicResource WindowTextBrush}" BorderThickness="1" CornerRadius="4"/>
 
-        <CheckBox x:Name="CheckBoxEnableMod" ToolTip="Enable / Disable this mod" IsChecked="{Binding ModEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="10,0,0,0" Checked="CheckBoxEnableMod_Changed" Unchecked="CheckBoxEnableMod_Changed" />
+        <CheckBox x:Name="CheckBoxEnableMod" ToolTip="Enable / Disable this mod" IsChecked="{Binding ModEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="5,10,0,10" Checked="CheckBoxEnableMod_Changed" Unchecked="CheckBoxEnableMod_Changed" VerticalAlignment="Top" />
 
-        <Label ToolTip="Drag this mod up or down to change his priority &#x0a;Top is highest, bottom is lowest" Content="{Binding ModName}" Foreground="{DynamicResource WindowTextBrush}" VerticalAlignment="Center" FontSize="15" Margin="40,0,10,0"/>
-        
-        <Button ToolTip="Delete this mod" Cursor="Hand" x:Name="DeleteModFromListBtn" HorizontalAlignment="Right" VerticalAlignment="Center" Width="25" Height="25" Margin="0,0,15,0" Click="DeleteModFromListBtn_Click">
+        <Button x:Name="BtnDropDownExpand" HorizontalAlignment="Left" VerticalAlignment="Top" Width="21" Height="21" Margin="40,15,0,0" Click="BtnDropDownExpand_Click">
+            <Image Source="{DynamicResource form_dropdownDrawingImage}" Margin="2"/>
+        </Button>
+
+        <Label ToolTip="Drag this mod up or down to change his priority &#x0a;Top is highest, bottom is lowest" Content="{Binding ModName}" Foreground="{DynamicResource WindowTextBrush}" VerticalAlignment="Top" FontSize="15" Margin="70,12,50,0"/>
+
+        <Button ToolTip="Delete this mod" Cursor="Hand" x:Name="DeleteModFromListBtn" HorizontalAlignment="Right" VerticalAlignment="Top" Width="25" Height="25" Margin="0,12,15,0" Click="DeleteModFromListBtn_Click">
             <Image Source="{StaticResource close_squareDrawingImage}"/>
         </Button>
+
+        <Border Margin="5,50,5,0" BorderThickness="0,1,0,0" BorderBrush="#7FFFFFFF">
+            <StackPanel Orientation="Vertical">
+                <Grid Margin="0,0,0,0">
+                    <TextBox x:Name="txtAddNote" VerticalAlignment="Top" Margin="0,5,0,5" MinHeight="30" AcceptsReturn="True" Padding="0,4,0,0" Background="Black" Foreground="{DynamicResource WindowTextBrush}" LostFocus="txtAddNote_LostFocus" GotFocus="txtAddNote_GotFocus">Add a note...</TextBox>
+                </Grid>
+
+                <Border Background="#be000000" CornerRadius="5" Margin="0,0,0,5">
+                    <local:FileTreeUC x:Name="FileTree"/>
+                </Border>
+                
+            </StackPanel>
+        </Border>
+        
     </Grid>
 </UserControl>

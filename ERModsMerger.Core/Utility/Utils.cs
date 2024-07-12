@@ -108,13 +108,22 @@ namespace ERModsMerger.Core.Utility
             return new string(a);
         }
 
-        public static void FindAllFiles(string path, ref List<string> files, bool searchInSubDirectories)
+        public static void FindAllFiles(string path, ref List<string> files, bool searchInSubDirectories, bool returnDirNames = false)
         {
-            files.AddAll(Directory.GetFiles(path).ToList());
-            if (searchInSubDirectories && Directory.GetDirectories(path).Length > 0)
+            FileAttributes attr = File.GetAttributes(path);
+            if (attr.HasFlag(FileAttributes.Directory)) // path is a directory / folder
             {
-                foreach (var directory in Directory.GetDirectories(path))
-                    FindAllFiles(directory, ref files, searchInSubDirectories);
+                if (returnDirNames)
+                    files.AddAll(Directory.GetDirectories(path).ToList());
+
+                files.AddAll(Directory.GetFiles(path).ToList());
+
+
+                if (searchInSubDirectories && Directory.GetDirectories(path).Length > 0)
+                {
+                    foreach (var directory in Directory.GetDirectories(path))
+                        FindAllFiles(directory, ref files, searchInSubDirectories, returnDirNames);
+                }
             }
         }
 
