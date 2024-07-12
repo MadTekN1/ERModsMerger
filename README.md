@@ -54,6 +54,10 @@ For now it's better to use this tool to merge mods who only have conflicting reg
 
 Run the console app with /merge argument to automatically merge mods located inside ModsToMerge to MergedMods folder, no user interaction will be asked and the console will close after the merge.﻿﻿
 
+## Contributing
+
+If you wish to contribute to this project, you are very welcome. A simple [code documentation](https://github.com/MadTekN1/ERModsMerger/blob/main/Documentation/CodeDoc.md) is available to help you get started. Enjoy coding :)
+
 ## Credits & Thanks
 * [SoulsMods](https://github.com/soulsmods)
 * [Smithbox](https://github.com/vawser/Smithbox)
