@@ -31,7 +31,7 @@ namespace ERModsManager.UCs
 
                 foreach(var modConfig in  ModsMergerConfig.LoadedConfig.Mods)
                 {
-                    if (Directory.Exists(modConfig.Path))
+                    if (Directory.Exists(modConfig.DirPath))
                     {
                         AddModToList(modConfig);
                     }
@@ -53,7 +53,7 @@ namespace ERModsManager.UCs
         {
             var modItem = new ModItemUC();
             modItem.ModName = modConfig.Name;
-            modItem.CurrentPath = modConfig.Path;
+            modItem.CurrentPath = modConfig.DirPath;
             modItem.ModEnabled = modConfig.Enabled;
             modItem.ModConfig = modConfig;
             if (modConfig.Note != "")
@@ -64,7 +64,7 @@ namespace ERModsManager.UCs
             modItem.ModEnabledChanged += ModItem_ModEnabledChanged;
 
             modItem.FileTree.ModFileConfigs = modConfig.ModFiles;
-            modItem.FileTree.Load(modConfig.Path);
+            modItem.FileTree.Load(modConfig.DirPath);
 
             ModsListStackPanel.Children.Add(modItem);
 
@@ -101,11 +101,14 @@ namespace ERModsManager.UCs
                     var name = System.IO.Path.GetFileName(file);
                     var nameNoExt = System.IO.Path.GetFileNameWithoutExtension(file);
 
-                    if(FIlesTreeAligner.TryAlignAndCopyToModsToMerge(file, nameNoExt))
-                    {
-                        var modConfig = new ModConfig(nameNoExt, ModsMergerConfig.LoadedConfig.AppDataFolderPath + "\\ModsToMerge\\" + nameNoExt, true);
-                        var modItem = AddModToList(modConfig, true);
+                    var modConfig = FIlesTreeAligner.TryAlignAndCopyToModsToMerge(file, nameNoExt);
 
+                    if (modConfig != null)
+                    {
+                        
+                        //var modConfig = new ModConfig(nameNoExt, ModsMergerConfig.LoadedConfig.AppDataFolderPath + "\\ModsToMerge\\" + nameNoExt, true);
+                        var modItem = AddModToList(modConfig, true);
+                        
                         /*
                         var modItem = new ModItemUC();
                         modItem.ModName = nameNoExt;

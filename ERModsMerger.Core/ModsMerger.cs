@@ -38,7 +38,7 @@ namespace ERModsMerger.Core
                 if (ModsMergerConfig.LoadedConfig.Mods.Count > 0)
                 {
                     modsDirectories = new List<string>();
-                    ModsMergerConfig.LoadedConfig.Mods.FindAll(x => x.Enabled).ForEach((x) => { modsDirectories.Insert(0,x.Path); });
+                    ModsMergerConfig.LoadedConfig.Mods.FindAll(x => x.Enabled).ForEach((x) => { modsDirectories.Insert(0,x.DirPath); });
                 }
 
 

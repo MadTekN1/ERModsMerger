@@ -81,11 +81,11 @@
   - [ ] Logs grouping
 - [ ] Check files / folders ignored by user in config
 - [ ] Internal events instructions conflicts merges
-- [ ] Detect & Handle .dll mods, editing modengine config_eldenring.toml accordingly
-  - [ ] ini integration
+- [x] Detect & Handle .dll mods, editing modengine config_eldenring.toml accordingly
+  - [x] ini integration
 - [x] (UnZip mods and) search in arborescences, align to correct paths using [EldenRingDictonnary.txt, thanks to Nordgaren again](https://github.com/Nordgaren/UXM-Selective-Unpack/blob/master/UXM/res/EldenRingDictionary.txt)
   - [ ] Ask user when multiple versions (duplicates) is found
-  - [ ] Ignore files that are not present in dictionary (readme, json project files, etc)
+  - [x] Ignore files that are not present in dictionary (readme, json project files, etc)
 - [ ] .csv merge support
 - [ ] Upgrade old regulation bin files using stored reg bin vanilla file of the same version
 - [x] Better implementation for regulation merging
@@ -97,5 +97,6 @@
 
 - [x] Vanilla dcx not loading
 - [x] Crash at save game load when for certain .msgbnd.dcx files
+- [x] Merging .prev files into reg bin
 
 </details>

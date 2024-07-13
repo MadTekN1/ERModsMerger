@@ -12,13 +12,18 @@ namespace ERModsMerger.Core
 {
     public static class FIlesTreeAligner
     {
-        public static bool TryAlignAndCopyToModsToMerge(string path, string modName)
+        public static ModConfig? TryAlignAndCopyToModsToMerge(string path, string modName)
         {
+            ModConfig? modConfig = null;
+
             string pathTemp = ModsMergerConfig.LoadedConfig.AppDataFolderPath + "\\temp";
             if(Directory.Exists(pathTemp))
                 Directory.Delete(pathTemp, true);
-
             Directory.CreateDirectory(pathTemp);
+
+            string pathDLLs = ModsMergerConfig.LoadedConfig.AppDataFolderPath + "\\DLLMods";
+            Directory.CreateDirectory(pathDLLs);
+
 
             List<string> files = new List<string>();
 
@@ -30,6 +35,7 @@ namespace ERModsMerger.Core
                 ZipFile.ExtractToDirectory(path, pathTemp);
                 Utils.FindAllFiles(pathTemp, ref files, true);
             }
+
 
             if (files.Count > 0)
             {
@@ -45,30 +51,58 @@ namespace ERModsMerger.Core
                 //magic is below
                 foreach (string file in files)
                 {
-                    if(file.Contains("regulation.bin"))
+                    var foundIndex = dictionary.FindIndex(x => x != "" && file.Contains(x));
+                    if (foundIndex != -1)
+                    {
+                        int toSkip = dictionary[foundIndex].Split("\\").Length;
+
+                        string parent = file;
+                        for (int i = 0; i < toSkip; i++)
+                            parent = Directory.GetParent(parent).FullName;
+
+                        Utils.CopyDirectory(parent, ModsMergerConfig.LoadedConfig.ModsToMergeFolderPath + "\\" + modName, true);
+
+                        modConfig = new ModConfig(modName, ModsMergerConfig.LoadedConfig.AppDataFolderPath + "\\ModsToMerge\\" + modName, true);
+
+                        break;
+                    }
+                    else if(Path.GetExtension(file) == ".dll")
                     {
                         string parent = Directory.GetParent(file).FullName;
-                        Utils.CopyDirectory(parent, ModsMergerConfig.LoadedConfig.ModsToMergeFolderPath+ "\\"+ modName, true);
-                        return true;
-                    }
-                    else
-                    {
-                        var foundIndex = dictionary.FindIndex(x=> x != "" && file.Contains(x));
-                        if(foundIndex != -1)
-                        {
-                            int toSkip = dictionary[foundIndex].Split("\\").Length;
+                        Utils.CopyDirectory(parent, pathDLLs + "\\" + modName, true);
 
-                            string parent = file;
-                            for (int i = 0; i < toSkip; i++)
-                                parent = Directory.GetParent(parent).FullName;
+                        string pathDllMod = pathDLLs + "\\" + modName + "\\" + Path.GetFileName(file);
 
-                            Utils.CopyDirectory(parent, ModsMergerConfig.LoadedConfig.ModsToMergeFolderPath + "\\" + modName, true);
-                            return true;
-                        }
+                        modConfig = new ModConfig(modName, Directory.GetParent(pathDllMod).FullName, true);
+                        modConfig.IsDllMod = true;
+                        modConfig.FilePath = pathDllMod;
+
+
+                        break;
                     }
                 }
+
+                if(modConfig != null)
+                {
+                    if(!modConfig.IsDllMod)
+                    {
+                        // delete all files that are not present in dictionary
+                        List<string> ToMergefiles = new List<string>();
+                        Utils.FindAllFiles(ModsMergerConfig.LoadedConfig.ModsToMergeFolderPath + "\\" + modName, ref ToMergefiles, true);
+                        ToMergefiles.ForEach(x => {
+                            if (!dictionary.Contains(x.Replace(ModsMergerConfig.LoadedConfig.ModsToMergeFolderPath + "\\" + modName + "\\", "")))
+                            {
+                                File.Delete(x);
+                            }
+
+                        });
+                    }
+                   
+                }
+                
             }
-            return false;
+
+            return modConfig;
         }
 
 

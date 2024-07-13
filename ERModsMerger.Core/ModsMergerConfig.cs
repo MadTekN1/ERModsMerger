@@ -23,7 +23,6 @@ namespace ERModsMerger.Core
                 {
                     LoadedConfig = (ModsMergerConfig?)JsonSerializer.Deserialize(File.ReadAllText(pathConfigFile), typeof(ModsMergerConfig));
 
-
                     LoadedConfig.ConfigPath = pathConfigFile;
 
                     CheckAndAddEnvVars();
@@ -79,11 +78,36 @@ namespace ERModsMerger.Core
                 JsonSerializerOptions options = new JsonSerializerOptions();
                 options.WriteIndented = true;
                 File.WriteAllText(pathConfigFile, JsonSerializer.Serialize(LoadedConfig, typeof(ModsMergerConfig), options));
+
+                LoadedConfig.SaveModEngineConfig();
+
                 return true;
             }
             catch (Exception)
             {
                 return false;
+            }
+        }
+
+        private void SaveModEngineConfig()
+        {
+            // there is dll mods
+            if (Mods.Count(x => x.IsDllMod && x.Enabled) > 0)
+            {
+                string modEngineConfig = File.ReadAllText(AppDataFolderPath + "\\ModEngine2\\config_eldenring_prog.toml");
+                var dllModsPaths = Mods.FindAll(x => x.IsDllMod && x.Enabled).Select(x => x.FilePath).ToList();
+
+                string confDlls = "\"" + string.Join("\",\"", dllModsPaths) + "\"";
+
+                modEngineConfig = modEngineConfig.Replace("$DLL_MODS_PATHS", confDlls).Replace("$MOD_DIR", MergedModsFolderPath).Replace("\\", "\\\\");
+                File.WriteAllText(AppDataFolderPath + "\\ModEngine2\\config_eldenring.toml", modEngineConfig);
+            }
+            else //set normal modengine config
+            {
+                string modEngineConfig = File.ReadAllText(AppDataFolderPath + "\\ModEngine2\\config_eldenring_prog.toml");
+
+                modEngineConfig = modEngineConfig.Replace("$DLL_MODS_PATHS", "").Replace("$MOD_DIR", MergedModsFolderPath).Replace("\\", "\\\\");
+                File.WriteAllText(AppDataFolderPath + "\\ModEngine2\\config_eldenring.toml", modEngineConfig);
             }
         }
 
@@ -118,7 +142,7 @@ namespace ERModsMerger.Core
             Mods = new List<ModConfig>();
         }
 
-        public bool Save()
+        public bool Save(string newConfigPath = "")
         {
             try
             {
@@ -126,7 +150,15 @@ namespace ERModsMerger.Core
                 {
                     JsonSerializerOptions options = new JsonSerializerOptions();
                     options.WriteIndented = true;
-                    File.WriteAllText(ConfigPath, JsonSerializer.Serialize(LoadedConfig, typeof(ModsMergerConfig), options));
+
+                    if(newConfigPath == "")
+                        File.WriteAllText(ConfigPath, JsonSerializer.Serialize(LoadedConfig, typeof(ModsMergerConfig), options));
+                    else
+                        File.WriteAllText(newConfigPath, JsonSerializer.Serialize(LoadedConfig, typeof(ModsMergerConfig), options));
+
+
+                    SaveModEngineConfig();
+
                     return true;
                 }
                
@@ -143,19 +175,23 @@ namespace ERModsMerger.Core
     public class ModConfig
     {
         public string Name { get; set; }
-        public string Path { get; set; }
+        public string DirPath { get; set; }
         public bool Enabled { get; set; }
         public string Note { get; set; }
 
+        public bool IsDllMod { get; set; }
+        public string FilePath { get; set; }
+
         public List<ModFileConfig> ModFiles { get; set; }
 
-        public ModConfig(string name, string path, bool enabled)
+        public ModConfig(string name, string dirPath, bool enabled)
         {
             Name = name;
-            Path = path;
+            DirPath = dirPath;
             Enabled = enabled;
             Note = "";
             ModFiles = new List<ModFileConfig>();
+            IsDllMod = false;
         }
     }
 
