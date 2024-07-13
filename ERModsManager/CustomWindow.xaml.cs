@@ -33,7 +33,7 @@ namespace ERModsManager
             CloseCommand = new RelayCommand(() => Close());
 
             InitSpecialButtons();
-            this.Topmost = true;
+            this.Topmost = false;
         }
 
         void Launch()
@@ -43,8 +43,16 @@ namespace ERModsManager
 
             if(ModsMergerConfig.LoadedConfig == null)
             {
-                ModsMergerConfig.LoadConfig(Global.ConfigFilePath);
-                ModsMergerConfig.SaveConfig(Global.ConfigFilePath); // save to apply eventual new properties
+                var config = ModsMergerConfig.LoadConfig(Global.ConfigFilePath);
+
+                if (config == null) // error during config loading // reset
+                {
+                    MessageBox.Show("Unexpected error during config loading, local data & config has been reset.");
+                    FirstLaunch();
+                }
+                    
+                else
+                    ModsMergerConfig.SaveConfig(Global.ConfigFilePath); // save to apply eventual new properties
             }
 
             ModsMerger.MergeFinish += ModsMerger_MergeFinish;
@@ -66,6 +74,10 @@ namespace ERModsManager
                 
 
             config.AppDataFolderPath = appdataPath + "\\ERModsManager";
+
+            if(Directory.Exists(config.AppDataFolderPath))//reset behavior
+                Directory.Delete(config.AppDataFolderPath, true);
+
             Directory.CreateDirectory(config.AppDataFolderPath);
 
             config.ModsToMergeFolderPath = config.AppDataFolderPath + "\\ModsToMerge";

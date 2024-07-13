@@ -44,13 +44,12 @@ namespace ERModsMerger.Core
             {
                 switch(conflict.FilesToMerge[0].ModRelativePath)
                 {
-                    case string a when a.Contains("regulation.bin"): RegulationBin.MergeRegulations(conflict.FilesToMerge, manualConflictsResolving); break;
+                    case string a when a.Contains("regulation.bin"): RegulationBin.MergeRegulationsV2(conflict.FilesToMerge, manualConflictsResolving); break;
                     case string a when a.Contains(".emevd.dcx"): EMEVD_DCX.MergeFiles(conflict.FilesToMerge); break; //WIP //to be tested
                     case string a when a.Contains(".msgbnd.dcx"): MSGBND_DCX.MergeFiles(conflict.FilesToMerge); break; //WIP //to be tested
                 }
             }
         }
-
     }
 
     internal class FileToMerge

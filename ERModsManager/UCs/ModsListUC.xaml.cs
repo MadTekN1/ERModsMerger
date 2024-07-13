@@ -150,11 +150,14 @@ namespace ERModsManager.UCs
         {
             ModItemUC item = ((ModItemUC)sender);
 
-
-            if (item.ModEnabled)
-               ModsMergerConfig.LoadedConfig.Mods.Find(x=>x.Name == item.ModName).Enabled = true;
-            else
-                ModsMergerConfig.LoadedConfig.Mods.Find(x => x.Name == item.ModName).Enabled = false;
+            var configMod = ModsMergerConfig.LoadedConfig.Mods.Find(x => x.Name == item.ModName);
+            if (configMod != null)
+            {
+                if (item.ModEnabled)
+                    configMod.Enabled = true;
+                else
+                    configMod.Enabled = false;
+            }
 
 
             ModsMergerConfig.SaveConfig(Global.ConfigFilePath);

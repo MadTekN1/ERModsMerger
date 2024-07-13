@@ -6,6 +6,7 @@
 - Deprecated regulation files versions cannot be loaded in the app
 - Regulation - Modded new rows overwrited by another mods using same row IDs
 - Row Names issues
+- Regbin merge also .prev files 
 
 ## ToDo
 

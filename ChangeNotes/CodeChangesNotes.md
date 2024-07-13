@@ -19,7 +19,7 @@
 </details>
 
 <details open>
-<summary><h3>1.3.1-alpha</h3></summary>
+<summary><h3>1.3.x-alpha</h3></summary>
 <br>
 
 - [x] Config:
@@ -74,7 +74,7 @@
 </details>
 
 <details open>
-<summary><h3>1.3.1-alpha</h3></summary>
+<summary><h3>1.3.x-alpha</h3></summary>
 <br>
 
 - [x] Better implementation for logs and user / console queries
@@ -88,13 +88,14 @@
   - [ ] Ignore files that are not present in dictionary (readme, json project files, etc)
 - [ ] .csv merge support
 - [ ] Upgrade old regulation bin files using stored reg bin vanilla file of the same version
-- [ ] Better implementation for conflict merging
-  - [ ] Load and check conflicts for each files, when conflict is found add it to a class object
-  - [ ] When all files are loaded and checked, apply modifications
+- [x] Better implementation for regulation merging
+  - [x] When all files are loaded, apply modifications
+  - [ ] Manual conflict resolving for the new regulation merge
 
 
 #### Fixes
 
-- [ ] Vanilla dcx not loading
+- [x] Vanilla dcx not loading
+- [x] Crash at save game load when for certain .msgbnd.dcx files
 
 </details>

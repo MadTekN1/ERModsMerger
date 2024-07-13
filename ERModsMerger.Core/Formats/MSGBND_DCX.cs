@@ -35,7 +35,7 @@ namespace ERModsMerger.Core.Formats
         {
             for (int i = 0; i < FMGs.Count; i++)
             {
-                FmgBinder.Files[i].Bytes = FMGs[i].Write(FmgBinder.Files[i].CompressionType);
+                FmgBinder.Files[i].Bytes = FMGs[i].Write();
             }
 
             FmgBinder.Write(path);
@@ -51,7 +51,7 @@ namespace ERModsMerger.Core.Formats
             List<FMG> vanilla_fmgs = new List<FMG>();
             try
             {
-                vanilla_fmgs = new MSGBND_DCX(ModsMergerConfig.LoadedConfig.GamePath + "\\" + files[0].ModRelativePath).FMGs;
+                vanilla_fmgs = new MSGBND_DCX("", files[0].ModRelativePath).FMGs;
                 LOG.Log($"Vanilla {files[0].ModRelativePath} - Loaded ✓\n");
             }
             catch (Exception e)
@@ -103,9 +103,10 @@ namespace ERModsMerger.Core.Formats
                             var entry_id_to_merge = entry_to_merge.ID;
                             var entry_found_in_vanilla = vanilla_fmgs[fmgFileIndex].Entries.Find(x=>x.ID==entry_id_to_merge);
                             var entry_found_in_base = base_fmgs[fmgFileIndex].Entries.Find(x => x.ID == entry_id_to_merge);
-
+                            
                             if(entry_found_in_vanilla != null && !Utils.AdvancedEquals(entry_to_merge.Text, entry_found_in_vanilla.Text))
                             {
+                                
                                 if (entry_found_in_base == null)
                                     base_fmgs[fmgFileIndex].Entries.Insert(fmgs_to_merge[fmgFileIndex].Entries.IndexOf(entry_to_merge), entry_to_merge);
                                 else

@@ -72,7 +72,204 @@ namespace ERModsMerger.Core.Formats
             LOG.Log($"\r🛈  Progess: 100% - Loaded ✓\n");
         }
 
-        //TODO USE SAME CONFLICT SYSTEM THAN FILE DISPATCHER
+
+        public List<ParamRowToMerge> FindRowsToMerge(Dictionary<string, PARAM> vanillaParams)
+        {
+            List<ParamRowToMerge> rowsToMerge = new List<ParamRowToMerge>();
+
+            foreach (var param in Params)
+            {
+                int moddedRowIndex = 0;
+                int vanillaRowIndex = 0;
+
+                while( moddedRowIndex < param.Value.Rows.Count )
+                {
+                    try
+                    {
+                        var moddedRow = param.Value.Rows[moddedRowIndex];
+                        var vanillaRow = vanillaParams[param.Key].Rows[vanillaRowIndex];
+
+                        ParamRowToMerge? potentialToMergeRow = null;
+
+                        //new row
+                        if (moddedRow.ID != vanillaRow.ID)
+                        {
+                            potentialToMergeRow = new ParamRowToMerge(param.Key, moddedRow.ID, moddedRow.Name, true);
+                            potentialToMergeRow.Row = moddedRow;
+
+                            for (int i = 0; i < moddedRow.Cells.Count; i++)
+                                potentialToMergeRow.Cells.Add(i, moddedRow.Cells[i].Value);
+                        }
+                        //Same row id
+                        else
+                        {
+
+                            for (int i = 0; i < moddedRow.Cells.Count; i++)
+                            {
+                                //field modified
+                                if (!Utils.AdvancedEquals(moddedRow.Cells[i].Value, vanillaRow.Cells[i].Value))
+                                {
+                                    if (potentialToMergeRow == null)
+                                        potentialToMergeRow = new ParamRowToMerge(param.Key, moddedRow.ID, moddedRow.Name, false);
+
+                                    potentialToMergeRow.Cells.Add(i, moddedRow.Cells[i].Value);
+                                }
+                            }
+
+                            vanillaRowIndex++;
+                        }
+
+
+                        if (potentialToMergeRow != null)
+                            rowsToMerge.Add(potentialToMergeRow);
+
+                        moddedRowIndex++;
+                    }
+                    catch (Exception e)
+                    {
+
+                        throw;
+                    }
+                    
+                }
+            }
+
+            return rowsToMerge;
+        }
+
+        public void ApplyModifiedRows(List<ParamRowToMerge> rows)
+        {
+            foreach (ParamRowToMerge row in rows)
+            {
+                try
+                {
+                    if (row.NewRow) // add new row
+                    {
+                        var indexExist = Params[row.ParamKey].Rows.FindIndex(x=>x.ID == row.RowID);
+                        if (indexExist != -1) //another mod already use that ID
+                        {
+                            Params[row.ParamKey].Rows[indexExist] = row.Row; // for now we replace and overwrite existing new modded row
+                        }
+                        else // ID is available, row can be inserted
+                        {
+                            // find insertable row index
+                            int index = Params[row.ParamKey].Rows.FindIndex(x => x.ID > row.RowID);
+
+                            if (index != -1)
+                                Params[row.ParamKey].Rows.Insert(index, row.Row);
+                        }
+
+                    }
+                    else // modifying existing row
+                    {
+                        int rowIndex = Params[row.ParamKey].Rows.FindIndex(x=>x.ID == row.RowID); //find the row index based on ID in case of an other mod add new row(s)
+                        foreach (var cell in row.Cells)
+                            Params[row.ParamKey].Rows[rowIndex].Cells[cell.Key].Value = cell.Value;
+                    }
+
+                    // save in bnd
+                    int bndFileIndex = bnd.Files.FindIndex(x => x.Name.Contains(row.ParamKey + ".param"));
+                    if (bndFileIndex != -1)
+                    {
+                        bnd.Files[bndFileIndex].Bytes = Params[row.ParamKey].Write();
+                    }
+                    else
+                    {
+                        LOG.Log("BND file not found", LOGTYPE.ERROR);
+                    }
+                }
+                catch (Exception e)
+                {
+
+                    throw;
+                }
+               
+            }
+
+        }
+
+        internal class ParamRowToMerge
+        {
+            public string ParamKey { get; set; }
+            public int RowID { get; set; }
+            public string Name { get; set; }
+            public Dictionary<int, object> Cells { get; set; }
+
+            //for new rows
+            public bool NewRow { get; set; }
+            public PARAM.Row? Row { get; set; }
+
+            public ParamRowToMerge(string paramKey, int rowID, string name, bool newRow, PARAM.Row? row = null)
+            {
+                ParamKey = paramKey;
+                RowID = rowID;
+                Name = name;
+                NewRow = newRow;
+                Row = row;
+                Cells = new Dictionary<int, object>();
+            }
+        }
+
+
+        public static void MergeRegulationsV2(List<FileToMerge> regulationBinFiles, bool manualConflictResolving)
+        {
+            LOG.Log("Loading vanilla regulation.bin");
+
+            if (!File.Exists(ModsMergerConfig.LoadedConfig.GamePath + "\\regulation.bin"))
+            {
+                LOG.Log($"Could not locate vanilla regulation bin at {ModsMergerConfig.LoadedConfig.GamePath}\n⚠  Please verify GamePath in ERModsMergerConfig\\config.json", LOGTYPE.ERROR);
+                return;
+            }
+
+            //load vanilla regulation.bin
+            RegulationBin vanillaRegulationBin;
+            try
+            {
+                vanillaRegulationBin = new RegulationBin(ModsMergerConfig.LoadedConfig.GamePath + "\\regulation.bin");
+            }
+            catch (Exception e)
+            {
+                LOG.Log($"Could not load vanilla regulation.bin\n⚠  Your game regulation version might be incompatible", LOGTYPE.ERROR);
+                return;
+            }
+
+            //reload again vanilla as main modded regulation.bin (reload because can't find a way to clone bnd object)
+            LOG.Log($"Loading initial modded regulation");
+            RegulationBin mainRegulationBin;
+            mainRegulationBin = new RegulationBin(ModsMergerConfig.LoadedConfig.GamePath + "\\regulation.bin");
+
+            Console.WriteLine();
+
+            for (int i = 0; i < regulationBinFiles.Count; i++)
+            {
+                if (File.Exists(regulationBinFiles[i].Path))
+                {
+                    //load modded regulation.bin
+                    LOG.Log($"Loading {regulationBinFiles[i].Path}");
+
+                    try
+                    {
+                        RegulationBin moddedRegulationBin = new RegulationBin(regulationBinFiles[i].Path);
+
+                        if (moddedRegulationBin.Version != vanillaRegulationBin.Version)
+                            LOG.Log("Regulation version doesn't match - If you encounter any issue, please update this mod\n", LOGTYPE.WARNING);
+
+                        LOG.Log($"Merging ...");
+                        var rows = moddedRegulationBin.FindRowsToMerge(vanillaRegulationBin.Params);
+                        mainRegulationBin.ApplyModifiedRows(rows);
+                    }
+                    catch (Exception e)
+                    {
+                        LOG.Log($"Could not load {regulationBinFiles[i].Path}\n⚠  Regulation version might be incompatible", LOGTYPE.ERROR);
+                    }
+                }
+            }
+
+            LOG.Log("Saving merged regulation.bin");
+            mainRegulationBin.Save(ModsMergerConfig.LoadedConfig.MergedModsFolderPath + "\\regulation.bin");
+            LOG.Log("Saved in: " + ModsMergerConfig.LoadedConfig.MergedModsFolderPath + "\\regulation.bin\n");
+        }
+
         public void MergeFrom(Dictionary<string, PARAM> fromParams, Dictionary<string, PARAM> vanillaParams, bool manualConflictResolving = false)
         {
             int counter = 0;
@@ -231,7 +428,7 @@ namespace ERModsMerger.Core.Formats
 
         }
 
-        public static void MergeRegulations(List<FileToMerge> regulationBinFiles, bool manualConflictResolving)
+        public static void MergeRegulationsV1(List<FileToMerge> regulationBinFiles, bool manualConflictResolving)
         {
             LOG.Log("Loading vanilla regulation.bin");
 
@@ -303,17 +500,4 @@ namespace ERModsMerger.Core.Formats
 
     }
 
-    internal class RegulationFieldConflict
-    {
-        string ParamName { get; set; }
-        int RowId { get; set; }
-        object FieldValue { get; set; }
-
-        public RegulationFieldConflict(string paramName, int rowId, object fieldValue)
-        {
-            ParamName = paramName;
-            RowId = rowId;
-            FieldValue = fieldValue;
-        }
-    }
 }

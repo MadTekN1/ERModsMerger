@@ -1,9 +1,7 @@
 ﻿using System.IO;
-using System.Text.Json;
-using static SoulsFormats.LUAINFO;
-using System.Windows;
-using System;
 using System.Reflection;
+using System.Text.Json;
+using System.Windows;
 
 namespace ERModsMerger.Core
 {
@@ -25,6 +23,7 @@ namespace ERModsMerger.Core
                 {
                     LoadedConfig = (ModsMergerConfig?)JsonSerializer.Deserialize(File.ReadAllText(pathConfigFile), typeof(ModsMergerConfig));
 
+
                     LoadedConfig.ConfigPath = pathConfigFile;
 
                     CheckAndAddEnvVars();
@@ -33,7 +32,6 @@ namespace ERModsMerger.Core
                 }
                 catch (Exception e)
                 {
-                    MessageBox.Show(e.Message);
                     return null;
                 }
             }

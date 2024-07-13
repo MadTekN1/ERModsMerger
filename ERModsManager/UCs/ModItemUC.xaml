@@ -12,7 +12,7 @@
         <CheckBox x:Name="CheckBoxEnableMod" ToolTip="Enable / Disable this mod" IsChecked="{Binding ModEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="5,10,0,10" Checked="CheckBoxEnableMod_Changed" Unchecked="CheckBoxEnableMod_Changed" VerticalAlignment="Top" />
 
         <Button x:Name="BtnDropDownExpand" HorizontalAlignment="Left" VerticalAlignment="Top" Width="21" Height="21" Margin="40,15,0,0" Click="BtnDropDownExpand_Click">
-            <Image Source="{DynamicResource form_dropdownDrawingImage}" Margin="2"/>
+            <Image Source="{DynamicResource dropDownDrawingImage}" Margin="0"/>
         </Button>
 
         <Label ToolTip="Drag this mod up or down to change his priority &#x0a;Top is highest, bottom is lowest" Content="{Binding ModName}" Foreground="{DynamicResource WindowTextBrush}" VerticalAlignment="Top" FontSize="15" Margin="70,12,50,0"/>

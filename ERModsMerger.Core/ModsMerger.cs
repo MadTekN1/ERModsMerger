@@ -77,15 +77,14 @@ namespace ERModsMerger.Core
                         {
                             OnMergeFinish(true);
                             return;
-                        }
-                            
+                        } 
                     }
                 }
 
                 Console.WriteLine();
-
+                
                 LOG.Log("Initial directories merge");
-
+                
                 if(Directory.Exists(config.MergedModsFolderPath))
                     Directory.Delete(config.MergedModsFolderPath, true);
 
@@ -93,7 +92,7 @@ namespace ERModsMerger.Core
 
                 foreach (string modsDirectory in modsDirectories)
                     Utils.CopyDirectory(modsDirectory, config.MergedModsFolderPath);
-
+                
 
 
                 dispatcher.MergeAllConflicts(manualConflictResolving);
