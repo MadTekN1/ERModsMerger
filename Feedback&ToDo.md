@@ -6,11 +6,9 @@
 - Deprecated regulation files versions cannot be loaded in the app
 - Regulation - Modded new rows overwrited by another mods using same row IDs
 - Row Names issues
+- Some vanilla .msgbnd.dcx files cannot be loaded
 - Regbin merge also .prev files 
 
 ## ToDo
 
-- [x] Configurable console print delay
-- [x] "Manual" regulation conflicts resolve
-- [ ] Load and merge conflicting event files (.emevd.dcx)
-- [ ] Load and merge conflicting msg files (.msgbnd.dcx)
+[Current progress](https://github.com/MadTekN1/ERModsMerger/blob/main/ChangeNotes/CodeChangesNotes.md)
