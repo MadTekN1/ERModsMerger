@@ -50,6 +50,21 @@ namespace ERModsMerger.Core
                 foreach (string modsDirectory in modsDirectories)
                     Utils.FindAllFiles(modsDirectory, ref allFiles, true);
 
+                //ignore individual files disabled by user
+                List<string>? ignoredFiles = null;
+                if (ModsMergerConfig.LoadedConfig.CurrentProfile.Mods.Count > 0)
+                {
+                    ignoredFiles = allFiles.FindAll((x) =>
+                        ModsMergerConfig.LoadedConfig.CurrentProfile.Mods.Count(y =>
+                            y.ModFiles.Count(z =>
+                                z.Path == x && !z.Enabled) > 0) > 0);
+
+                    allFiles.RemoveAll((x) =>
+                        ModsMergerConfig.LoadedConfig.CurrentProfile.Mods.Count(y=> 
+                            y.ModFiles.Count(z=> 
+                                z.Path == x && !z.Enabled) > 0) > 0);
+                }
+
                 foreach (string file in allFiles)
                     dispatcher.AddFile(file);
 
@@ -93,7 +108,7 @@ namespace ERModsMerger.Core
                 Directory.CreateDirectory(config.CurrentProfile.MergedModsFolderPath);
 
                 foreach (string modsDirectory in modsDirectories)
-                    Utils.CopyDirectory(modsDirectory, config.CurrentProfile.MergedModsFolderPath);
+                    Utils.CopyDirectory(modsDirectory, config.CurrentProfile.MergedModsFolderPath, true, ignoredFiles);
                 
 
 

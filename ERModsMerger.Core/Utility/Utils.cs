@@ -128,7 +128,7 @@ namespace ERModsMerger.Core.Utility
         }
 
 
-        public static void CopyDirectory(string sourceDir, string destinationDir, bool recursive = true)
+        public static void CopyDirectory(string sourceDir, string destinationDir, bool recursive = true, List<string>? ignoredFiles = null)
         {
             // Get information about the source directory
             var dir = new DirectoryInfo(sourceDir);
@@ -143,12 +143,30 @@ namespace ERModsMerger.Core.Utility
             // Create the destination directory
             Directory.CreateDirectory(destinationDir);
 
-            // Get the files in the source directory and copy to the destination directory
-            foreach (FileInfo file in dir.GetFiles())
+            if(ignoredFiles != null)
             {
-                string targetFilePath = Path.Combine(destinationDir, file.Name);
-                file.CopyTo(targetFilePath, true);
+                // Get the files in the source directory and copy to the destination directory
+                foreach (FileInfo file in dir.GetFiles())
+                {
+                    if (!ignoredFiles.Contains(file.FullName))
+                    {
+                        string targetFilePath = Path.Combine(destinationDir, file.Name);
+                        file.CopyTo(targetFilePath, true);
+                    }
+                }
             }
+            else
+            {
+                // Get the files in the source directory and copy to the destination directory
+                foreach (FileInfo file in dir.GetFiles())
+                {
+
+                    string targetFilePath = Path.Combine(destinationDir, file.Name);
+                    file.CopyTo(targetFilePath, true);
+                }
+            }
+
+           
 
             // If recursive and copying subdirectories, recursively call this method
             if (recursive)
@@ -156,7 +174,7 @@ namespace ERModsMerger.Core.Utility
                 foreach (DirectoryInfo subDir in dirs)
                 {
                     string newDestinationDir = Path.Combine(destinationDir, subDir.Name);
-                    CopyDirectory(subDir.FullName, newDestinationDir, true);
+                    CopyDirectory(subDir.FullName, newDestinationDir, true, ignoredFiles);
                 }
             }
         }

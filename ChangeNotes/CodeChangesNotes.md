@@ -78,7 +78,7 @@
 
 - [x] Better implementation for logs and user / console queries
   - [ ] Logs grouping
-- [ ] Check files / folders ignored by user in config
+- [x] Check files / folders ignored by user in config
 - [ ] Internal events instructions conflicts merges
 - [x] Detect & Handle .dll mods, editing modengine config_eldenring.toml accordingly
   - [x] ini integration
