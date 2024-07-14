@@ -33,7 +33,7 @@ namespace ERModsManager
             CloseCommand = new RelayCommand(() => Close());
 
             InitSpecialButtons();
-            this.Topmost = false;
+            this.Topmost = true;
         }
 
         void Launch()
@@ -222,6 +222,8 @@ namespace ERModsManager
             BtnMerge.IsEnabled = false;
             BtnPlay.IsEnabled = false;
 
+            MainModsListUC.IsEnabled = false;
+
             MainLogsUC.TxtLogs.Text = "";
 
             Task.Run(() =>
@@ -237,6 +239,7 @@ namespace ERModsManager
              new Action(() => {
                  this.BtnMerge.IsEnabled = true;
                  this.BtnPlay.IsEnabled = true;
+                 this.MainModsListUC.IsEnabled = true;
                  this.Topmost = true;
                  MainLogsUC.TxtLogs.Text += "\n\nMerging Done!";
              }));

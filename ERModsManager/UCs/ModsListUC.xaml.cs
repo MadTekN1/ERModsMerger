@@ -1,4 +1,5 @@
-﻿using ERModsMerger.Core;
+﻿using DotNext.Collections.Generic;
+using ERModsMerger.Core;
 using ERModsMerger.Core.Utility;
 using System.IO;
 using System.Windows;
@@ -21,7 +22,6 @@ namespace ERModsManager.UCs
 
             LoadProfiles();
             CreateModList();
-            
         }
 
         /// <summary>
@@ -165,7 +165,7 @@ namespace ERModsManager.UCs
                 ModItemUC item = ((ModItemUC) sender);
                 ModsListStackPanel.Children.Remove(item);
 
-                if(Directory.Exists(item.CurrentPath))
+                if(!item.ModConfig.ImportedFromAnotherProfile && Directory.Exists(item.CurrentPath))
                     Directory.Delete(item.CurrentPath, true);
 
                 ModsMergerConfig.LoadedConfig.CurrentProfile.Mods.RemoveAll(x=>x.Name==item.ModName);
@@ -259,14 +259,8 @@ namespace ERModsManager.UCs
 
         private void AddProfileBtn_Click(object sender, RoutedEventArgs e)
         {
-            var profile = ModsMergerConfig.CreateAndLoadProfile();
-
-            ComboBoxItem comboBoxItem = new ComboBoxItem();
-            comboBoxItem.Content = profile.ProfileName;
-            ComboProfiles.Items.Add(comboBoxItem);
-            ComboProfiles.SelectedIndex = ComboProfiles.Items.Count - 1;
-
-
+            ModsMergerConfig.CreateAndLoadProfile();
+            LoadProfiles();
         }
 
         private void DeleteProfileBtn_Click(object sender, RoutedEventArgs e)
@@ -308,14 +302,41 @@ namespace ERModsManager.UCs
 
         private void LoadProfiles()
         {
-            foreach(var profile in ModsMergerConfig.LoadedConfig.Profiles)
+            ComboProfiles.Items.Clear();
+            ImportMergedModsFromProfile_Menu.Items.Clear();
+            var profilesToDelete = new List<ProfileConfig>();
+            foreach (var profile in ModsMergerConfig.LoadedConfig.Profiles)
             {
                 ComboBoxItem comboBoxItem = new ComboBoxItem();
                 comboBoxItem.Content = profile.ProfileName;
                 ComboProfiles.Items.Add(comboBoxItem);
 
+                //add entries to context menu
+                MenuItem menuItem = new MenuItem();
+                menuItem.Header = "Import merged mods from " + profile.ProfileName;
+                menuItem.Tag = profile;
+                menuItem.Click += MenuItemImportFromMergedProfile_Click;
+
+                ImportMergedModsFromProfile_Menu.Items.Add(menuItem);
+
+                //select the last used profile
                 if (ModsMergerConfig.LoadedConfig.CurrentProfile.ProfileName == profile.ProfileName)
                     ComboProfiles.SelectedIndex = ComboProfiles.Items.Count - 1;
+            }
+
+            profilesToDelete.ForEach(profile => ModsMergerConfig.LoadedConfig.Profiles.Remove(profile));
+        }
+
+        private void MenuItemImportFromMergedProfile_Click(object sender, RoutedEventArgs e)
+        {
+            var profile = ((MenuItem)sender).Tag as ProfileConfig;
+
+            var modConfig = new ModConfig("Merged mods from "+profile.ProfileName, profile.MergedModsFolderPath, true);
+            modConfig.ImportedFromAnotherProfile = true;
+
+            if (modConfig != null)
+            {
+                var modItem = AddModToList(modConfig, true);
             }
         }
     }

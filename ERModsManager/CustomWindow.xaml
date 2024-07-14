@@ -36,7 +36,7 @@
         <Grid Margin="0,40,0,0">
             <Label Foreground="{DynamicResource WindowTextBrush}" FontSize="11" FontWeight="Regular" Margin="5,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Center">Drag your mods below -- Drag them up or down to define priority -- Merge -- Play</Label>
 
-            <Ucs:ModsListUC Margin="0,30,0,70" />
+            <Ucs:ModsListUC x:Name="MainModsListUC" Margin="0,30,0,70" />
             <Ucs:ConfigUC x:Name="MainConfigUC" Margin="0,30,0,70" Visibility="Hidden"/>
             <Ucs:LogsUC x:Name="MainLogsUC" Margin="0,30,0,70" Visibility="Hidden"/>
             <Ucs:HelpUC x:Name="MainHelpUC" Margin="0,30,0,70" Visibility="Hidden"/>

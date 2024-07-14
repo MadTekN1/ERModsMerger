@@ -31,11 +31,10 @@
     - [x] Enable / Disable particular file / folder
 	- [x] Save in current config
 	- [ ] Highlight red / orange when file conflict is found (red = not supported and will be overwritten, orange = supported and internal merge will occur)
-- [ ] Re-Merge using precedent / saved merge(s)
-  - [ ] Save the content of MergedMods in SavesMergedMods after a merge and add in it a json object that relates merge details (mods, conflicts)
 - [x] Profiles
   - [x] Dropdown list for loading or add new merge / config profiles
   - [ ] Inform user when he try to launch the game before the selected profile is ready (not merged)
+- [x] Re-Merge using profile(s) merged mods
 - [ ] Better logs
   - [ ] Logs presented in a list instead of textblock
   - [ ] Colorized icons for different log types

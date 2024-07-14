@@ -30,8 +30,10 @@ namespace ERModsMerger.Core
 
 
             string[] dirs = Directory.GetDirectories(config.CurrentProfile.ModsToMergeFolderPath);
-            if(dirs != null && dirs.Length > 0)
+
+            if((dirs != null && dirs.Length > 0) || ModsMergerConfig.LoadedConfig.CurrentProfile.Mods.Count > 0)
             {
+
                 List<string> modsDirectories = dirs.OrderByDescending(q => q).ToList();
 
                 //if mods are present in config with special order, change modsDirectories

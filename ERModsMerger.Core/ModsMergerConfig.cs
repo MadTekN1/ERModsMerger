@@ -221,7 +221,7 @@ namespace ERModsMerger.Core
             ProfileDir = profileDir;
 
             ModsToMergeFolderPath = profileDir + "\\ModsToMerge";
-            MergedModsFolderPath = profileDir + "\\Merged mods from " + profileName;
+            MergedModsFolderPath = profileDir + "\\MergedMods";
 
             if (!Directory.Exists(ProfileDir))
                 Directory.CreateDirectory(ProfileDir);
@@ -254,6 +254,8 @@ namespace ERModsMerger.Core
         public bool Enabled { get; set; }
         public string Note { get; set; }
 
+        public bool ImportedFromAnotherProfile { get; set; }
+
         public bool IsDllMod { get; set; }
         public string FilePath { get; set; }
 
@@ -268,6 +270,7 @@ namespace ERModsMerger.Core
             ModFiles = new List<ModFileConfig>();
             IsDllMod = false;
             FilePath = "";
+            ImportedFromAnotherProfile = false;
         }
     }
 

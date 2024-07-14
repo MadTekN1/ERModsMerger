@@ -28,6 +28,7 @@ namespace ERModsManager.UCs
 
         public string CurrentPath { get; set; }
 
+
         bool _modEnabled = true;
         public bool ModEnabled { get { return _modEnabled; } set { _modEnabled = value; } }
 
