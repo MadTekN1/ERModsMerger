@@ -136,13 +136,13 @@ namespace ERModsMerger.Core.Formats
             try
             {
                 Console.WriteLine();
-                LOG.Log("Saving modded event file to: " + ModsMergerConfig.LoadedConfig.MergedModsFolderPath + "\\" + files[0].ModRelativePath);
+                LOG.Log("Saving modded event file to: " + ModsMergerConfig.LoadedConfig.CurrentProfile.MergedModsFolderPath + "\\" + files[0].ModRelativePath);
                 //write the file in the merged mods directory
-                base_emevd.Write(ModsMergerConfig.LoadedConfig.MergedModsFolderPath + "\\" + files[0].ModRelativePath);
+                base_emevd.Write(ModsMergerConfig.LoadedConfig.CurrentProfile.MergedModsFolderPath + "\\" + files[0].ModRelativePath);
             }
             catch (Exception e)
             {
-                LOG.Log($"Error during saving modded event in {ModsMergerConfig.LoadedConfig.MergedModsFolderPath + "\\" + files[0].ModRelativePath}\n",
+                LOG.Log($"Error during saving modded event in {ModsMergerConfig.LoadedConfig.CurrentProfile.MergedModsFolderPath + "\\" + files[0].ModRelativePath}\n",
                     LOGTYPE.ERROR);
             }
 

@@ -9,6 +9,8 @@ namespace ERModsMerger.Core
     {
         public static ModsMergerConfig? LoadedConfig { get; set; }
 
+        
+
         /// <summary>
         /// Load the config from the specified path
         /// </summary>
@@ -24,6 +26,15 @@ namespace ERModsMerger.Core
                     LoadedConfig = (ModsMergerConfig?)JsonSerializer.Deserialize(File.ReadAllText(pathConfigFile), typeof(ModsMergerConfig));
 
                     LoadedConfig.ConfigPath = pathConfigFile;
+
+
+                    //check if main profile exist
+                    if(LoadedConfig.Profiles.Count == 0)
+                    {
+                        var mainProfile = new ProfileConfig("Main Profile", LoadedConfig.AppDataFolderPath);
+                        LoadedConfig.Profiles.Add(mainProfile);
+                        LoadedConfig.CurrentProfile = mainProfile;
+                    }
 
                     CheckAndAddEnvVars();
                     CheckVersionAndEmbeddedExtraction();
@@ -89,27 +100,29 @@ namespace ERModsMerger.Core
             }
         }
 
-        private void SaveModEngineConfig()
+
+        public static ProfileConfig CreateAndLoadProfile()
         {
-            // there is dll mods
-            if (Mods.Count(x => x.IsDllMod && x.Enabled) > 0)
-            {
-                string modEngineConfig = File.ReadAllText(AppDataFolderPath + "\\ModEngine2\\config_eldenring_prog.toml");
-                var dllModsPaths = Mods.FindAll(x => x.IsDllMod && x.Enabled).Select(x => x.FilePath).ToList();
+            if (!Directory.Exists(LoadedConfig.AppDataFolderPath + "\\Profiles"))
+                Directory.CreateDirectory(LoadedConfig.AppDataFolderPath + "\\Profiles");
 
-                string confDlls = "\"" + string.Join("\",\"", dllModsPaths) + "\"";
+            int customConfigNameCounter = 1;
+            string dirProfile = LoadedConfig.AppDataFolderPath + "\\Profiles\\Custom Profile ";
+            while (Directory.Exists(dirProfile + customConfigNameCounter.ToString()))
+                customConfigNameCounter++;
 
-                modEngineConfig = modEngineConfig.Replace("$DLL_MODS_PATHS", confDlls).Replace("$MOD_DIR", MergedModsFolderPath).Replace("\\", "\\\\");
-                File.WriteAllText(AppDataFolderPath + "\\ModEngine2\\config_eldenring.toml", modEngineConfig);
-            }
-            else //set normal modengine config
-            {
-                string modEngineConfig = File.ReadAllText(AppDataFolderPath + "\\ModEngine2\\config_eldenring_prog.toml");
+            dirProfile = dirProfile + customConfigNameCounter.ToString();
 
-                modEngineConfig = modEngineConfig.Replace("$DLL_MODS_PATHS", "").Replace("$MOD_DIR", MergedModsFolderPath).Replace("\\", "\\\\");
-                File.WriteAllText(AppDataFolderPath + "\\ModEngine2\\config_eldenring.toml", modEngineConfig);
-            }
+
+            var profile = new ProfileConfig("Custom Profile " + customConfigNameCounter.ToString(), dirProfile);
+            LoadedConfig.Profiles.Add(profile);
+            LoadedConfig.CurrentProfile = profile;
+
+            LoadedConfig.Save();
+
+            return profile;
         }
+
 
 
         string _gamePath = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\ELDEN RING\\Game";
@@ -119,11 +132,6 @@ namespace ERModsMerger.Core
         string _appDataFolderPath = "ERModsMergerConfig";
         public string AppDataFolderPath { get { return _appDataFolderPath; } set { _appDataFolderPath = value; } }
 
-        string _modsToMergeFolderPath = "ModsToMerge";
-        public string ModsToMergeFolderPath { get { return _modsToMergeFolderPath; } set { _modsToMergeFolderPath = value; } }
-
-        string _mergedModsFolderPath = "MergedMods";
-        public string MergedModsFolderPath { get { return _mergedModsFolderPath; } set { _mergedModsFolderPath = value; } }
 
         public string ConfigPath { get; set; }
 
@@ -133,16 +141,21 @@ namespace ERModsMerger.Core
         string _toolVersion = "";
         public string ToolVersion { get { return _toolVersion; } set { _toolVersion = value; } }
 
+        public ProfileConfig? CurrentProfile { get; set; }
 
+        public List<ProfileConfig> Profiles { get; set; }
 
-        public List<ModConfig> Mods { get; set; }
+        //public List<ModConfig> Mods { get; set; }
+
 
         public ModsMergerConfig()
         {
-            Mods = new List<ModConfig>();
+            //Mods = new List<ModConfig>();
+            ConfigPath = "";
+            Profiles = new List<ProfileConfig>();
         }
 
-        public bool Save(string newConfigPath = "")
+        public bool Save()
         {
             try
             {
@@ -151,10 +164,7 @@ namespace ERModsMerger.Core
                     JsonSerializerOptions options = new JsonSerializerOptions();
                     options.WriteIndented = true;
 
-                    if(newConfigPath == "")
-                        File.WriteAllText(ConfigPath, JsonSerializer.Serialize(LoadedConfig, typeof(ModsMergerConfig), options));
-                    else
-                        File.WriteAllText(newConfigPath, JsonSerializer.Serialize(LoadedConfig, typeof(ModsMergerConfig), options));
+                    File.WriteAllText(ConfigPath, JsonSerializer.Serialize(this, typeof(ModsMergerConfig), options));
 
 
                     SaveModEngineConfig();
@@ -169,6 +179,71 @@ namespace ERModsMerger.Core
             }
 
             return false;
+        }
+        private void SaveModEngineConfig()
+        {
+            // there is dll mods
+            if (LoadedConfig.CurrentProfile.Mods.Count(x => x.IsDllMod && x.Enabled) > 0)
+            {
+                string modEngineConfig = File.ReadAllText(AppDataFolderPath + "\\ModEngine2\\config_eldenring_prog.toml");
+                var dllModsPaths = LoadedConfig.CurrentProfile.Mods.FindAll(x => x.IsDllMod && x.Enabled).Select(x => x.FilePath).ToList();
+
+                string confDlls = "\"" + string.Join("\",\"", dllModsPaths) + "\"";
+
+                modEngineConfig = modEngineConfig.Replace("$DLL_MODS_PATHS", confDlls).Replace("$MOD_DIR", CurrentProfile.MergedModsFolderPath).Replace("\\", "\\\\");
+                File.WriteAllText(AppDataFolderPath + "\\ModEngine2\\config_eldenring.toml", modEngineConfig);
+            }
+            else //set normal modengine config
+            {
+                string modEngineConfig = File.ReadAllText(AppDataFolderPath + "\\ModEngine2\\config_eldenring_prog.toml");
+
+                modEngineConfig = modEngineConfig.Replace("$DLL_MODS_PATHS", "").Replace("$MOD_DIR", CurrentProfile.MergedModsFolderPath).Replace("\\", "\\\\");
+                File.WriteAllText(AppDataFolderPath + "\\ModEngine2\\config_eldenring.toml", modEngineConfig);
+            }
+        }
+
+    }
+
+    public class ProfileConfig
+    {
+        public string ProfileName { get; set; }
+        public string ProfileDir { get; set; }
+
+        public string ModsToMergeFolderPath { get; set; }
+
+        public string MergedModsFolderPath { get; set; }
+
+        public List<ModConfig> Mods { get; set; }
+
+        public ProfileConfig(string profileName, string profileDir)
+        {
+            ProfileName = profileName;
+            ProfileDir = profileDir;
+
+            ModsToMergeFolderPath = profileDir + "\\ModsToMerge";
+            MergedModsFolderPath = profileDir + "\\Merged mods from " + profileName;
+
+            if (!Directory.Exists(ProfileDir))
+                Directory.CreateDirectory(ProfileDir);
+
+            if (!Directory.Exists(ModsToMergeFolderPath))
+                Directory.CreateDirectory(ModsToMergeFolderPath);
+
+            if (!Directory.Exists(MergedModsFolderPath))
+                Directory.CreateDirectory(MergedModsFolderPath);
+
+
+            Mods = new List<ModConfig>();
+        }
+
+       
+
+        public void Delete()
+        {
+            if (Directory.Exists(ProfileDir))
+                Directory.Delete(ProfileDir, true);
+
+            ModsMergerConfig.LoadedConfig.Profiles.Remove(this);
         }
     }
 
@@ -192,6 +267,7 @@ namespace ERModsMerger.Core
             Note = "";
             ModFiles = new List<ModFileConfig>();
             IsDllMod = false;
+            FilePath = "";
         }
     }
 

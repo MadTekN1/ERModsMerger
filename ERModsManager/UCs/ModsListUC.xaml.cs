@@ -13,23 +13,30 @@ namespace ERModsManager.UCs
     /// </summary>
     public partial class ModsListUC : UserControl
     {
+        List<ModItemUC> ModsList =new List<ModItemUC>();
+
         public ModsListUC()
         {
             InitializeComponent();
 
+            LoadProfiles();
             CreateModList();
+            
         }
 
         /// <summary>
-        /// Create the mod list based on the config file, if some mods doesn't exist in folders, update mod list config and save
+        /// (Re)Create the mod list based on the config file, if some mods doesn't exist in folders, update mod list config and save
         /// </summary>
         private void CreateModList()
         {
-            if (ModsMergerConfig.LoadedConfig != null)
+            if (ModsMergerConfig.LoadedConfig != null && ModsListStackPanel != null)
             {
+                ModsListStackPanel.Children.Clear();
+                ModsList = new List<ModItemUC>();
+
                 var toRemove = new List<ModConfig>();
 
-                foreach(var modConfig in  ModsMergerConfig.LoadedConfig.Mods)
+                foreach(var modConfig in  ModsMergerConfig.LoadedConfig.CurrentProfile.Mods)
                 {
                     if (Directory.Exists(modConfig.DirPath))
                     {
@@ -43,7 +50,7 @@ namespace ERModsManager.UCs
 
                 //delete mods if needed
                 foreach (var mod in toRemove)
-                    ModsMergerConfig.LoadedConfig.Mods.Remove(mod);
+                    ModsMergerConfig.LoadedConfig.CurrentProfile.Mods.Remove(mod);
 
                 ModsMergerConfig.LoadedConfig.Save();
             }
@@ -67,11 +74,12 @@ namespace ERModsManager.UCs
             modItem.FileTree.Load(modConfig.DirPath);
 
             ModsListStackPanel.Children.Add(modItem);
+            ModsList.Add(modItem);
 
             if(isNew)
             {
-                ModsMergerConfig.LoadedConfig.Mods.Add(modConfig);
-                modItem.ModConfig = ModsMergerConfig.LoadedConfig.Mods.Last();
+                ModsMergerConfig.LoadedConfig.CurrentProfile.Mods.Add(modConfig);
+                modItem.ModConfig = ModsMergerConfig.LoadedConfig.CurrentProfile.Mods.Last();
                 ModsMergerConfig.LoadedConfig.Save();
             }
             
@@ -108,23 +116,6 @@ namespace ERModsManager.UCs
                         
                         //var modConfig = new ModConfig(nameNoExt, ModsMergerConfig.LoadedConfig.AppDataFolderPath + "\\ModsToMerge\\" + nameNoExt, true);
                         var modItem = AddModToList(modConfig, true);
-                        
-                        /*
-                        var modItem = new ModItemUC();
-                        modItem.ModName = nameNoExt;
-                        modItem.InitialFilePath = file;
-                        modItem.CurrentPath = ModsMergerConfig.LoadedConfig.AppDataFolderPath + "\\ModsToMerge\\" + nameNoExt;
-                        modItem.ModDeleted += ModItem_ModDeleted;
-                        modItem.MouseDown += ModItem_MouseDown;
-                        modItem.ModEnabledChanged += ModItem_ModEnabledChanged;
-
-                        modItem.fileTreeUc.Load(modItem.CurrentPath);
-
-                        ModsListStackPanel.Children.Add(modItem);
-
-                        ModsMergerConfig.LoadedConfig.Mods.Add(new ModConfig(modItem.ModName, modItem.CurrentPath, true));
-                        modItem.ModConfig = ModsMergerConfig.LoadedConfig.Mods.Last();
-                        ModsMergerConfig.LoadedConfig.Save();*/
                     }
                     else // nope
                     {
@@ -153,7 +144,7 @@ namespace ERModsManager.UCs
         {
             ModItemUC item = ((ModItemUC)sender);
 
-            var configMod = ModsMergerConfig.LoadedConfig.Mods.Find(x => x.Name == item.ModName);
+            var configMod = ModsMergerConfig.LoadedConfig.CurrentProfile.Mods.Find(x => x.Name == item.ModName);
             if (configMod != null)
             {
                 if (item.ModEnabled)
@@ -177,7 +168,7 @@ namespace ERModsManager.UCs
                 if(Directory.Exists(item.CurrentPath))
                     Directory.Delete(item.CurrentPath, true);
 
-                ModsMergerConfig.LoadedConfig.Mods.RemoveAll(x=>x.Name==item.ModName);
+                ModsMergerConfig.LoadedConfig.CurrentProfile.Mods.RemoveAll(x=>x.Name==item.ModName);
                 ModsMergerConfig.SaveConfig(Global.ConfigFilePath);
             }
         }
@@ -217,10 +208,10 @@ namespace ERModsManager.UCs
             if(indexElemAbove > -1 && mouseRelativeLocation.Y < GetRelativePos(ModsListStackPanel.Children[indexElemAbove], ModsListStackPanel).Y)
             {
                 //move up
-                int indexInConfig = ModsMergerConfig.LoadedConfig.Mods.FindIndex(x => x.Name == MoveableModItemUC.ModName);
-                var modItemConfig = ModsMergerConfig.LoadedConfig.Mods[indexInConfig];
-                ModsMergerConfig.LoadedConfig.Mods.Remove(modItemConfig);
-                ModsMergerConfig.LoadedConfig.Mods.Insert(indexElemAbove,modItemConfig);
+                int indexInConfig = ModsMergerConfig.LoadedConfig.CurrentProfile.Mods.FindIndex(x => x.Name == MoveableModItemUC.ModName);
+                var modItemConfig = ModsMergerConfig.LoadedConfig.CurrentProfile.Mods[indexInConfig];
+                ModsMergerConfig.LoadedConfig.CurrentProfile.Mods.Remove(modItemConfig);
+                ModsMergerConfig.LoadedConfig.CurrentProfile.Mods.Insert(indexElemAbove,modItemConfig);
                 ModsMergerConfig.SaveConfig(Global.ConfigFilePath);
 
                 ModsListStackPanel.Children.Remove(MoveableModItemUC);
@@ -229,10 +220,10 @@ namespace ERModsManager.UCs
             else if(indexElemBelow < ModsListStackPanel.Children.Count && mouseRelativeLocation.Y > GetRelativePos(ModsListStackPanel.Children[indexElemBelow], ModsListStackPanel).Y)
             {
                 //move down
-                int indexInConfig = ModsMergerConfig.LoadedConfig.Mods.FindIndex(x => x.Name == MoveableModItemUC.ModName);
-                var modItemConfig = ModsMergerConfig.LoadedConfig.Mods[indexInConfig];
-                ModsMergerConfig.LoadedConfig.Mods.Remove(modItemConfig);
-                ModsMergerConfig.LoadedConfig.Mods.Insert(indexElemBelow, modItemConfig);
+                int indexInConfig = ModsMergerConfig.LoadedConfig.CurrentProfile.Mods.FindIndex(x => x.Name == MoveableModItemUC.ModName);
+                var modItemConfig = ModsMergerConfig.LoadedConfig.CurrentProfile.Mods[indexInConfig];
+                ModsMergerConfig.LoadedConfig.CurrentProfile.Mods.Remove(modItemConfig);
+                ModsMergerConfig.LoadedConfig.CurrentProfile.Mods.Insert(indexElemBelow, modItemConfig);
                 ModsMergerConfig.SaveConfig(Global.ConfigFilePath);
 
                 ModsListStackPanel.Children.Remove(MoveableModItemUC);
@@ -258,5 +249,74 @@ namespace ERModsManager.UCs
             MoveableModItemUC.Background = new SolidColorBrush(Color.FromArgb(190, 0, 0, 0));
         }
 
+        private void EnableDisableAll_Click(object sender, RoutedEventArgs e)
+        {
+            if(EnableDisableAll.IsChecked == true)
+                ModsList.ForEach(x=> x.CheckBoxEnableMod.IsChecked = true);
+            else
+                ModsList.ForEach(x => x.CheckBoxEnableMod.IsChecked = false);
+        }
+
+        private void AddProfileBtn_Click(object sender, RoutedEventArgs e)
+        {
+            var profile = ModsMergerConfig.CreateAndLoadProfile();
+
+            ComboBoxItem comboBoxItem = new ComboBoxItem();
+            comboBoxItem.Content = profile.ProfileName;
+            ComboProfiles.Items.Add(comboBoxItem);
+            ComboProfiles.SelectedIndex = ComboProfiles.Items.Count - 1;
+
+
+        }
+
+        private void DeleteProfileBtn_Click(object sender, RoutedEventArgs e)
+        {
+            
+            var Result = MessageBox.Show($"Delete: {((ComboBoxItem)ComboProfiles.SelectedItem).Content}?", "", MessageBoxButton.YesNo, MessageBoxImage.Exclamation);
+            if (Result == MessageBoxResult.Yes)
+            {
+                ModsMergerConfig.LoadedConfig.CurrentProfile.Delete();
+                ComboProfiles.Items.Remove(ComboProfiles.SelectedItem);
+                ComboProfiles.SelectedIndex = 0;
+            }
+        }
+
+        private void ComboProfiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(this.IsInitialized)
+            {
+                
+                if(ComboProfiles.SelectedIndex == 0) //main profile
+                {
+                    DeleteProfileBtn.IsEnabled = false;
+
+                    ModsMergerConfig.LoadedConfig.CurrentProfile = ModsMergerConfig.LoadedConfig.Profiles[ComboProfiles.SelectedIndex];
+
+                    CreateModList();
+                }
+                else if(ComboProfiles.SelectedIndex != -1)
+                {
+                    DeleteProfileBtn.IsEnabled = true;
+                    ModsMergerConfig.LoadedConfig.CurrentProfile = ModsMergerConfig.LoadedConfig.Profiles[ComboProfiles.SelectedIndex];
+
+                    CreateModList();
+                }
+                
+            }
+
+        }
+
+        private void LoadProfiles()
+        {
+            foreach(var profile in ModsMergerConfig.LoadedConfig.Profiles)
+            {
+                ComboBoxItem comboBoxItem = new ComboBoxItem();
+                comboBoxItem.Content = profile.ProfileName;
+                ComboProfiles.Items.Add(comboBoxItem);
+
+                if (ModsMergerConfig.LoadedConfig.CurrentProfile.ProfileName == profile.ProfileName)
+                    ComboProfiles.SelectedIndex = ComboProfiles.Items.Count - 1;
+            }
+        }
     }
 }

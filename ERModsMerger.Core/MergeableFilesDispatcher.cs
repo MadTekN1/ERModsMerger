@@ -64,7 +64,7 @@ namespace ERModsMerger.Core
             Path = path;
             var splittedPath = Path.Split('\\');
 
-            var toSkip = ModsMergerConfig.LoadedConfig.ModsToMergeFolderPath.Split("\\").Count() +1;
+            var toSkip = ModsMergerConfig.LoadedConfig.CurrentProfile.ModsToMergeFolderPath.Split("\\").Count() +1;
 
             ModRelativePath = splittedPath.Skip(toSkip).ToString("\\");
         }

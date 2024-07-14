@@ -266,8 +266,8 @@ namespace ERModsMerger.Core.Formats
             }
 
             LOG.Log("Saving merged regulation.bin");
-            mainRegulationBin.Save(ModsMergerConfig.LoadedConfig.MergedModsFolderPath + "\\regulation.bin");
-            LOG.Log("Saved in: " + ModsMergerConfig.LoadedConfig.MergedModsFolderPath + "\\regulation.bin\n");
+            mainRegulationBin.Save(ModsMergerConfig.LoadedConfig.CurrentProfile.MergedModsFolderPath + "\\regulation.bin");
+            LOG.Log("Saved in: " + ModsMergerConfig.LoadedConfig.CurrentProfile.MergedModsFolderPath + "\\regulation.bin\n");
         }
 
         public void MergeFrom(Dictionary<string, PARAM> fromParams, Dictionary<string, PARAM> vanillaParams, bool manualConflictResolving = false)
@@ -494,8 +494,8 @@ namespace ERModsMerger.Core.Formats
             }
 
             LOG.Log("Saving merged regulation.bin");
-            mainRegulationBin.Save(ModsMergerConfig.LoadedConfig.MergedModsFolderPath + "\\regulation.bin");
-            LOG.Log("Saved in: " + ModsMergerConfig.LoadedConfig.MergedModsFolderPath + "\\regulation.bin\n");
+            mainRegulationBin.Save(ModsMergerConfig.LoadedConfig.CurrentProfile.MergedModsFolderPath + "\\regulation.bin");
+            LOG.Log("Saved in: " + ModsMergerConfig.LoadedConfig.CurrentProfile.MergedModsFolderPath + "\\regulation.bin\n");
         }
 
     }

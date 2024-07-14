@@ -5,8 +5,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ERModsManager.UCs"
              mc:Ignorable="d" 
-             d:DesignHeight="400" d:DesignWidth="400" DragEnter="UserControl_DragEnter" AllowDrop="True" Drop="UserControl_Drop"  BorderBrush="#33FFFFFF" BorderThickness="0,1,0,1">
-    <Grid Margin="0,5,0,0">
+             d:DesignHeight="400" d:DesignWidth="400" DragEnter="UserControl_DragEnter" AllowDrop="True" Drop="UserControl_Drop"  BorderBrush="#33FFFFFF" BorderThickness="0,1,0,1" Background="Transparent">
+
+    <UserControl.ContextMenu>
+        <ContextMenu>
+            <MenuItem x:Name="ImportMergedModsFromProfile_Menu" Header="Import merged mods from profile">
+            </MenuItem>
+        </ContextMenu>
+    </UserControl.ContextMenu>
+    <Grid Margin="0,0,0,0">
         <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
             <Image Source="{DynamicResource dragAndDropDrawingImage}" Opacity="0.3" Width="200" Height="200" Margin="0,0,0,20"/>
 
@@ -17,10 +24,33 @@
                 
             </TextBlock>
         </Grid>
+
+        <Grid VerticalAlignment="Top" Height="40">
+            <CheckBox x:Name="EnableDisableAll" IsChecked="True" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Click="EnableDisableAll_Click"/>
+            <ComboBox x:Name="ComboProfiles"  Margin="50,5,80,5" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" SelectionChanged="ComboProfiles_SelectionChanged">
+                
+            </ComboBox>
+            <Button ToolTip="Add new profile" Cursor="Hand" x:Name="AddProfileBtn" HorizontalAlignment="Right" VerticalAlignment="Center" Width="25" Height="25" Margin="0,0,45,0" Click="AddProfileBtn_Click">
+                <Image Source="{StaticResource addDrawingImage}" Margin="2,2,2,2"/>
+            </Button>
+            <Button IsEnabled="False" ToolTip="Delete this profile" Cursor="Hand" x:Name="DeleteProfileBtn" HorizontalAlignment="Right" VerticalAlignment="Center" Width="25" Height="25" Margin="0,0,12,0" Click="DeleteProfileBtn_Click">
+                <Image Source="{StaticResource close_squareDrawingImage}"/>
+            </Button>
+        </Grid>
         
-        <ScrollViewer VerticalScrollBarVisibility="Hidden">
-            <StackPanel x:Name="ModsListStackPanel" Orientation="Vertical">
-            </StackPanel>
-        </ScrollViewer>
+        <Border Margin="0,40,0,0" BorderBrush="#33FFFFFF" BorderThickness="0,1,0,0">
+            <ScrollViewer VerticalScrollBarVisibility="Hidden" VerticalAlignment="Top">
+                <Grid>
+                    <Border x:Name="MergedIndicatorBorder" Visibility="Hidden" Margin="4" BorderBrush="#9FD69D" BorderThickness="1" CornerRadius="5"/>
+                    <StackPanel x:Name="ModsListStackPanel" Orientation="Vertical" Margin="5">
+
+                        <local:ModItemUC/>
+                        <local:ModItemUC/>
+                        <local:ModItemUC/>
+                    </StackPanel>
+                </Grid>
+            </ScrollViewer>
+        </Border>
+        
     </Grid>
 </UserControl>

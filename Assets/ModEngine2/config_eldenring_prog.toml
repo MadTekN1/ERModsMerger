@@ -1,0 +1,14 @@
+[modengine]
+debug = false
+external_dlls = [$DLL_MODS_PATHS]
+
+[extension.mod_loader]
+enabled = true
+loose_params = false
+
+mods = [
+    { enabled = true, name = "default", path = "$MOD_DIR" }
+]
+
+[extension.scylla_hide]
+enabled = false

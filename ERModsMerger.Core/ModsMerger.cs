@@ -29,16 +29,16 @@ namespace ERModsMerger.Core
             LOG.Log("-- START MERGING --\n");
 
 
-            string[] dirs = Directory.GetDirectories(config.ModsToMergeFolderPath);
+            string[] dirs = Directory.GetDirectories(config.CurrentProfile.ModsToMergeFolderPath);
             if(dirs != null && dirs.Length > 0)
             {
                 List<string> modsDirectories = dirs.OrderByDescending(q => q).ToList();
 
                 //if mods are present in config with special order, change modsDirectories
-                if (ModsMergerConfig.LoadedConfig.Mods.Count > 0)
+                if (ModsMergerConfig.LoadedConfig.CurrentProfile.Mods.Count > 0)
                 {
                     modsDirectories = new List<string>();
-                    ModsMergerConfig.LoadedConfig.Mods.FindAll(x => x.Enabled).ForEach((x) => { modsDirectories.Insert(0,x.DirPath); });
+                    ModsMergerConfig.LoadedConfig.CurrentProfile.Mods.FindAll(x => x.Enabled && !x.IsDllMod).ForEach((x) => { modsDirectories.Insert(0,x.DirPath); });
                 }
 
 
@@ -85,13 +85,13 @@ namespace ERModsMerger.Core
                 
                 LOG.Log("Initial directories merge");
                 
-                if(Directory.Exists(config.MergedModsFolderPath))
-                    Directory.Delete(config.MergedModsFolderPath, true);
+                if(Directory.Exists(config.CurrentProfile.MergedModsFolderPath))
+                    Directory.Delete(config.CurrentProfile.MergedModsFolderPath, true);
 
-                Directory.CreateDirectory(config.MergedModsFolderPath);
+                Directory.CreateDirectory(config.CurrentProfile.MergedModsFolderPath);
 
                 foreach (string modsDirectory in modsDirectories)
-                    Utils.CopyDirectory(modsDirectory, config.MergedModsFolderPath);
+                    Utils.CopyDirectory(modsDirectory, config.CurrentProfile.MergedModsFolderPath);
                 
 
 
@@ -101,7 +101,7 @@ namespace ERModsMerger.Core
             }
             else
             {
-                LOG.Log($"No mod folder(s) could be found in {config.ModsToMergeFolderPath}\n⚠ Verify if everything is placed well like in example.\n⚠ Relaunch and look at example to see expected folders placement.",
+                LOG.Log($"No mod folder(s) could be found in {config.CurrentProfile.ModsToMergeFolderPath}\n⚠ Verify if everything is placed well like in example.\n⚠ Relaunch and look at example to see expected folders placement.",
                     LOGTYPE.ERROR);
             }
 

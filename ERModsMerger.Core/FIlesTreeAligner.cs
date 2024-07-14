@@ -60,9 +60,9 @@ namespace ERModsMerger.Core
                         for (int i = 0; i < toSkip; i++)
                             parent = Directory.GetParent(parent).FullName;
 
-                        Utils.CopyDirectory(parent, ModsMergerConfig.LoadedConfig.ModsToMergeFolderPath + "\\" + modName, true);
+                        Utils.CopyDirectory(parent, ModsMergerConfig.LoadedConfig.CurrentProfile.ModsToMergeFolderPath + "\\" + modName, true);
 
-                        modConfig = new ModConfig(modName, ModsMergerConfig.LoadedConfig.AppDataFolderPath + "\\ModsToMerge\\" + modName, true);
+                        modConfig = new ModConfig(modName, ModsMergerConfig.LoadedConfig.CurrentProfile.ModsToMergeFolderPath + "\\" + modName, true);
 
                         break;
                     }
@@ -88,9 +88,9 @@ namespace ERModsMerger.Core
                     {
                         // delete all files that are not present in dictionary
                         List<string> ToMergefiles = new List<string>();
-                        Utils.FindAllFiles(ModsMergerConfig.LoadedConfig.ModsToMergeFolderPath + "\\" + modName, ref ToMergefiles, true);
+                        Utils.FindAllFiles(ModsMergerConfig.LoadedConfig.CurrentProfile.ModsToMergeFolderPath + "\\" + modName, ref ToMergefiles, true);
                         ToMergefiles.ForEach(x => {
-                            if (!dictionary.Contains(x.Replace(ModsMergerConfig.LoadedConfig.ModsToMergeFolderPath + "\\" + modName + "\\", "")))
+                            if (!dictionary.Contains(x.Replace(ModsMergerConfig.LoadedConfig.CurrentProfile.ModsToMergeFolderPath + "\\" + modName + "\\", "")))
                             {
                                 File.Delete(x);
                             }

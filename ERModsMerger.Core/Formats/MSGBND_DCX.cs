@@ -136,13 +136,13 @@ namespace ERModsMerger.Core.Formats
             try
             {
                 Console.WriteLine();
-                LOG.Log("Saving modded .msgbnd.dcx file to: " + ModsMergerConfig.LoadedConfig.MergedModsFolderPath + "\\" + files[0].ModRelativePath);
-                base_msgbnd.Save(ModsMergerConfig.LoadedConfig.MergedModsFolderPath + "\\" + files[0].ModRelativePath);
+                LOG.Log("Saving modded .msgbnd.dcx file to: " + ModsMergerConfig.LoadedConfig.CurrentProfile.MergedModsFolderPath + "\\" + files[0].ModRelativePath);
+                base_msgbnd.Save(ModsMergerConfig.LoadedConfig.CurrentProfile.MergedModsFolderPath + "\\" + files[0].ModRelativePath);
 
             }
             catch (Exception)
             {
-                LOG.Log($"Error during saving modded .msgbnd.dcx file in {ModsMergerConfig.LoadedConfig.MergedModsFolderPath + "\\" + files[0].ModRelativePath}\n",
+                LOG.Log($"Error during saving modded .msgbnd.dcx file in {ModsMergerConfig.LoadedConfig.CurrentProfile.MergedModsFolderPath + "\\" + files[0].ModRelativePath}\n",
                     LOGTYPE.ERROR);
 
             }

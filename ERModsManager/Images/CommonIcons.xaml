@@ -548,4 +548,18 @@
         </DrawingImage.Drawing>
     </DrawingImage>
 
+    <DrawingImage x:Key="addDrawingImage">
+        <DrawingImage.Drawing>
+            <DrawingGroup ClipGeometry="M0,0 V24 H24 V0 H0 Z">
+                <DrawingGroup Opacity="1">
+                    <GeometryDrawing Geometry="F1 M24,24z M0,0z M8,12L12,12 M12,12L16,12 M12,12L12,16 M12,12L12,8 M4,16.8002L4,7.2002C4,6.08009 4,5.51962 4.21799,5.0918 4.40973,4.71547 4.71547,4.40973 5.0918,4.21799 5.51962,4 6.08009,4 7.2002,4L16.8002,4C17.9203,4 18.4801,4 18.9079,4.21799 19.2842,4.40973 19.5905,4.71547 19.7822,5.0918 20.0002,5.51962 20.0002,6.07967 20.0002,7.19978L20.0002,16.7998C20.0002,17.9199 20.0002,18.48 19.7822,18.9078 19.5905,19.2841 19.2842,19.5905 18.9079,19.7822 18.4805,20 17.9215,20 16.8036,20L7.19691,20C6.07899,20 5.5192,20 5.0918,19.7822 4.71547,19.5905 4.40973,19.2842 4.21799,18.9079 4,18.4801 4,17.9203 4,16.8002z">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="{DynamicResource WindowTextBrush}" Thickness="2" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" MiterLimit="1" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
 </ResourceDictionary>

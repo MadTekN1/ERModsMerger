@@ -80,10 +80,9 @@ namespace ERModsManager
 
             Directory.CreateDirectory(config.AppDataFolderPath);
 
-            config.ModsToMergeFolderPath = config.AppDataFolderPath + "\\ModsToMerge";
-            Directory.CreateDirectory(config.ModsToMergeFolderPath);
-            config.MergedModsFolderPath = config.AppDataFolderPath + "\\MergedMods";
-            Directory.CreateDirectory(config.MergedModsFolderPath);
+            var mainProfile = new ProfileConfig("Main Profile", config.AppDataFolderPath);
+            config.Profiles.Add(mainProfile);
+            config.CurrentProfile = mainProfile;
 
             ModsMergerConfig.LoadedConfig = config;
 
