@@ -22,6 +22,7 @@ namespace ERModsManager.UCs
     /// </summary>
     public partial class LogsUC : UserControl
     {
+
         public LogsUC()
         {
             InitializeComponent();
@@ -30,11 +31,13 @@ namespace ERModsManager.UCs
 
         private void LOG_NewLog(NewLogEventArgs args)
         {
-            Application.Current.Dispatcher.BeginInvoke(
-              DispatcherPriority.Background,
-              new Action(() => { 
+            
+            Application.Current.Dispatcher.Invoke(
+              new Action(() => {
                   this.TxtLogs.Text += "\n" + args.Log.Message;
                   this.LogScrollViewer.ScrollToBottom();
+
+                  this.LogsStackPanel.Children.Add(new LogItemUC(args.Log));
               }));
             
         }

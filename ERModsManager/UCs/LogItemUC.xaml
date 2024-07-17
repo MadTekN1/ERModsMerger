@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="ERModsManager.UCs.LogItemUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ERModsManager.UCs"
+             mc:Ignorable="d" 
+             d:DesignWidth="400" FontFamily="Liberation Sans" Margin="5,5,5,5" >
+    <Grid ClipToBounds="True">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Name="ColumnDef0" Width="0*"/>
+            <ColumnDefinition x:Name="ColumnDef1" Width="1*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Border BorderBrush="{DynamicResource WindowTextBrush}" BorderThickness="1" CornerRadius="4" Background="#be000000" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
+        <Border Grid.Column="0" CornerRadius="4" Background="#0C00FFED" Grid.RowSpan="2"/>
+        <Image x:Name="ImgInfo" Visibility="Visible" Source="{DynamicResource infoSquareDrawingImage}" Height="20" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+        <Image x:Name="ImgWarning" Visibility="Hidden" Source="{DynamicResource warningDrawingImage}" Height="20" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+        <Image x:Name="ImgError" Visibility="Hidden" Source="{DynamicResource errorDrawingImage}" Height="20" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+        <Image x:Name="ImgSuccess" Visibility="Hidden" Source="{DynamicResource successDrawingImage}" Height="20" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+        <TextBlock x:Name="TitleTxtBlock" Foreground="{DynamicResource WindowTextBrush}" VerticalAlignment="Top" FontSize="12" Margin="35,14,5,5" Grid.ColumnSpan="2" FontFamily="Liberation Sans" TextWrapping="Wrap" >
+            HELLO I AM A LOG TITLE WITH A LONG, VERY LONG NAME<LineBreak/> Using lines breaks <LineBreak/> Working pretty well
+        </TextBlock>
+
+        <Border Grid.Row="1" Grid.ColumnSpan="2" Padding="20,5,5,5">
+            <StackPanel x:Name="SubLogsStackPanel"  Orientation="Vertical">
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

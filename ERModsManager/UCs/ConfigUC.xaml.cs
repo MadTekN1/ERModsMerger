@@ -88,5 +88,17 @@ namespace ERModsManager.UCs
             return "";
 
         }
+
+        private void BtnReset_Click(object sender, RoutedEventArgs e)
+        {
+            var result = MessageBox.Show("You're about to completely reset datas of this tool, every mods dropped here, merges, profiles, config will be lost.\n\nContinue?", "", MessageBoxButton.YesNo, MessageBoxImage.Exclamation);
+            if (result == MessageBoxResult.Yes)
+            {
+                Directory.Delete(ModsMergerConfig.LoadedConfig.AppDataFolderPath, true);
+                Process.Start(Environment.ProcessPath);
+                Application.Current.Shutdown();
+            }
+           
+        }
     }
 }

@@ -9,6 +9,7 @@ using Microsoft.Win32;
 using System.IO;
 using ERModsMerger.Core;
 using System.Windows.Threading;
+using System.Security.Principal;
 
 namespace ERModsManager
 {
@@ -34,6 +35,19 @@ namespace ERModsManager
 
             InitSpecialButtons();
             this.Topmost = true;
+
+            if (IsAdministrator())
+            {
+                MessageBox.Show("Administrator launch detected: This tool shouldn't be used with administrator privileges. If you encounter issues please restart in normal mode", "",
+                    MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            }
+        }
+
+        public static bool IsAdministrator()
+        {
+            var identity = WindowsIdentity.GetCurrent();
+            var principal = new WindowsPrincipal(identity);
+            return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
 
         void Launch()
@@ -201,17 +215,39 @@ namespace ERModsManager
 
         private void BtnPlay_Click(object sender, RoutedEventArgs e)
         {
-            this.Topmost = false;
+            MessageBoxResult? messagebox = null;
 
-            string path = ModsMergerConfig.LoadedConfig.AppDataFolderPath + "\\ModEngine2\\launchmod_eldenring.bat";
+            if(ModsMergerConfig.LoadedConfig.CurrentProfile.Modified)
+                messagebox = MessageBox.Show("You're trying to launch the game but the profile has been modified since the last merge.\n\nLaunch the game anyway?", "", MessageBoxButton.YesNo);
 
-            string command = "cd " + ModsMergerConfig.LoadedConfig.AppDataFolderPath + "\\ModEngine2\n" +
-                            "modengine2_launcher.exe -t er -c config_eldenring.toml";
+            if (!ModsMergerConfig.LoadedConfig.CurrentProfile.Modified || messagebox == MessageBoxResult.Yes)
+            {
+                this.Topmost = false;
 
-            File.WriteAllText(path, command);
-            Process.Start(path);
-            Thread.Sleep(500);
-            this.Close();
+                /*
+                string path = ModsMergerConfig.LoadedConfig.AppDataFolderPath + "\\ModEngine2\\launchmod_eldenring.bat";
+                
+                string command = "cd " + ModsMergerConfig.LoadedConfig.AppDataFolderPath + "\\ModEngine2\n" +
+                                "modengine2_launcher.exe -t er -c config_eldenring.toml";
+
+                File.WriteAllText(path, command);
+
+                Process.Start(path);
+                */
+
+                string ME2LauncherPath = ModsMergerConfig.LoadedConfig.AppDataFolderPath + "\\ModEngine2\\modengine2_launcher.exe";
+
+                string args = $@"-t er "+
+                    $@"-p ""{ModsMergerConfig.LoadedConfig.GamePath}\eldenring.exe"" " +
+                    $@"-c ""{ModsMergerConfig.LoadedConfig.AppDataFolderPath}\ModEngine2\config_eldenring.toml""";
+
+
+                Process.Start(ME2LauncherPath, args);
+
+                Thread.Sleep(500);
+
+                this.Close();
+            }
         }
 
         private void Merge()
@@ -241,7 +277,10 @@ namespace ERModsManager
                  this.BtnPlay.IsEnabled = true;
                  this.MainModsListUC.IsEnabled = true;
                  this.Topmost = true;
-                 MainLogsUC.TxtLogs.Text += "\n\nMerging Done!";
+
+                 ModsMergerConfig.LoadedConfig.CurrentProfile.Modified = false;
+                 MainModsListUC.MergedIndicatorBorder.Visibility = Visibility.Visible;
+                 ModsMergerConfig.LoadedConfig.Save();
              }));
 
         }

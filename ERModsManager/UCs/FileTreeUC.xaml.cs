@@ -28,29 +28,42 @@ namespace ERModsManager.UCs
 
         private string _currentPath = string.Empty;
 
-        public FileTreeUC? parent { get; set; }
+        public FileTreeUC? ParentFileTree { get; set; }
+        public List<FileTreeUC> SonsFileTrees { get; set; }
 
-        public List<ModFileConfig> ModFileConfigs;
+        public List<FileToMerge> Paths { get; set; }
+
+        public FileToMerge? Path { get; set; }
+
+
 
         public FileTreeUC()
         {
             InitializeComponent();
-            ModFileConfigs = new List<ModFileConfig>();
+            Paths = new List<FileToMerge>();
+            SonsFileTrees = new List<FileTreeUC>();
             DataContext = this;
 
             FileEnabled = true;
         }
 
-        public void Load(string folderPath, bool showHeadFolder = false)
+        public void Load(string folderPath, bool showHeadFolder , ModConfig modConfig)
         {
             _currentPath = folderPath;
 
-            int foundIndex = ModFileConfigs.FindIndex(x => x.Path == _currentPath);
+            int foundIndex = Paths.FindIndex(x => x.Path == _currentPath);
 
-            if(foundIndex == -1)
-                ModFileConfigs.Add(new ModFileConfig(_currentPath, true));
-            else
-                FileEnabled = ModFileConfigs[foundIndex].Enabled;
+            if(foundIndex == -1 && showHeadFolder)
+            {
+                Paths.Add(new FileToMerge(_currentPath, _currentPath.Replace(modConfig.DirPath + "\\", "")));
+                Path = Paths.Last();
+            }
+            else if(showHeadFolder)
+            {
+                FileEnabled = Paths[foundIndex].Enabled;
+                Path = Paths[foundIndex];
+            }
+                
 
             if (!showHeadFolder)
             {
@@ -64,6 +77,7 @@ namespace ERModsManager.UCs
 
             Utils.FindAllFiles(folderPath, ref paths, false, true);
 
+
             HeaderName.Content = folderPath.Split("\\").Last();
 
             foreach (string path in paths)
@@ -71,10 +85,13 @@ namespace ERModsManager.UCs
                 FileAttributes attr = File.GetAttributes(path);
 
                 FileTreeUC filetree = new FileTreeUC();
-                filetree.ModFileConfigs = ModFileConfigs;
-                filetree.parent = this;
+                filetree.Paths = Paths;
+                filetree.ParentFileTree = this;
+                SonsFileTrees.Add(filetree);
+
                 StackPanelSubFileTree.Children.Add(filetree);
-                filetree.Load(path, true);
+
+                filetree.Load(path, true, modConfig);
 
                 if (!attr.HasFlag(FileAttributes.Directory)) // path is a directory / folder
                 {
@@ -82,6 +99,58 @@ namespace ERModsManager.UCs
                     filetree.imgFile.Visibility = Visibility.Visible;
                 }
             }
+        }
+
+        public void FindConflictingFileTrees(List<FileConflict> conflicts)
+        {
+            HeaderName.Foreground = (Brush)this.FindResource("WindowTextBrush");
+            HeaderName.ToolTip = null;
+
+
+            var conflictFound = conflicts.Find(x => Path != null && x.FilesToMerge[0].ModRelativePath == Path.ModRelativePath);
+            if (conflictFound != null && conflictFound.FilesToMerge.Count(x => x.Path == Path.Path) > 0)
+            {
+
+                if(conflictFound.SupportedFormat)
+                {
+                    HeaderName.Foreground = new SolidColorBrush(Colors.Orange);
+                    HeaderName.ToolTip = "Supported conflict, will merge:\n\n";
+                }
+                else
+                {
+                    HeaderName.Foreground = new SolidColorBrush(Colors.Red);
+                    HeaderName.ToolTip = "Unsupported conflict, overwrite will occur:\n\n";
+                }
+                    
+                conflictFound.FilesToMerge.ForEach(x => HeaderName.ToolTip += x.Path.Replace("\\" + x.ModRelativePath, "").Split("\\").Last() + ": " + x.ModRelativePath + "\n");
+
+                var parent = ParentFileTree;
+                while (parent != null)
+                {
+                    parent.HeaderName.Foreground = HeaderName.Foreground;
+                    parent.HeaderName.ToolTip = HeaderName.ToolTip;
+                    parent = parent.ParentFileTree;
+                }
+            }
+                
+
+            foreach (var son in SonsFileTrees)
+                    son.FindConflictingFileTrees(conflicts);
+        }
+
+        public FileTreeUC? FindFileByRelativePath(string relativePath, bool returnIfDisabled =false)
+        {
+            if(_currentPath.Contains(relativePath) && FileEnabled) return this;
+
+            HeaderName.Foreground = (Brush)this.FindResource("WindowTextBrush"); //reset color in case of not correponding
+
+            foreach (var sonFileTree in SonsFileTrees)
+            {
+                var result = sonFileTree.FindFileByRelativePath(relativePath);
+                if (result != null) return result;
+            }
+
+            return null;
         }
 
         private void Header_MouseUp(object sender, MouseButtonEventArgs e)
@@ -98,7 +167,7 @@ namespace ERModsManager.UCs
         }
 
 
-        public void SwitchEnableRecursive(bool enabled, bool direct = false)
+        private void SwitchEnableRecursive(bool enabled, bool direct = false)
         {
             CheckBoxEnableFileFolder.IsChecked = enabled;
             foreach (var child in StackPanelSubFileTree.Children)
@@ -107,24 +176,24 @@ namespace ERModsManager.UCs
             }
 
             //recursive up when enabled
-            if(enabled && parent != null && !parent.FileEnabled)
-                parent.SwitchEnableRecursiveUp();
+            if(enabled && ParentFileTree != null && !ParentFileTree.FileEnabled)
+                ParentFileTree.SwitchEnableRecursiveUp();
 
-            var fileConfig = ModFileConfigs.Find(x=>x.Path == _currentPath);
+            var fileConfig = Paths.Find(x=>x.Path == _currentPath);
             if (fileConfig != null)
             {
                 fileConfig.Enabled = enabled;
             }
         }
 
-        public void SwitchEnableRecursiveUp()
+        private void SwitchEnableRecursiveUp()
         {
             CheckBoxEnableFileFolder.IsChecked = true;
             //recursive up when enabled
-            if (parent != null && !parent.FileEnabled)
-                parent.SwitchEnableRecursiveUp();
+            if (ParentFileTree != null && !ParentFileTree.FileEnabled)
+                ParentFileTree.SwitchEnableRecursiveUp();
 
-            var fileConfig = ModFileConfigs.Find(x => x.Path == _currentPath);
+            var fileConfig = Paths.Find(x => x.Path == _currentPath);
             if (fileConfig != null)
             {
                 fileConfig.Enabled = true;

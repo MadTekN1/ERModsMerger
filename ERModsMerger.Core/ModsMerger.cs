@@ -10,24 +10,20 @@ namespace ERModsMerger.Core
     {
         public static void StartMerge(bool manualConflictResolving = false, bool requestUserConfirmations = true)
         {
-
-            LOG.Log("Retrieve config");
+            var logconfig = LOG.Log("Retrieve configuration", LOGTYPE.INFO);
 
             ModsMergerConfig config = ModsMergerConfig.LoadedConfig;
 
             if (config == null)
             {
-                LOG.Log("Could not load Config at ERModsMergerConfig\\config.json\n   If you have made modifications, please verify if everything is correct.",
+                logconfig.AddSubLog("Could not load Config at ERModsMergerConfig\\config.json\n   If you have made modifications, please verify if everything is correct.",
                         LOGTYPE.ERROR);
 
-                OnMergeFinish(true);
+                OnMergeFinish(false);
                 return;
             }
 
-            LOG.Log("Config loaded\n");
-
-            LOG.Log("-- START MERGING --\n");
-
+            logconfig.AddSubLog("Configuration loaded", LOGTYPE.SUCCESS);
 
             string[] dirs = Directory.GetDirectories(config.CurrentProfile.ModsToMergeFolderPath);
 
@@ -35,38 +31,45 @@ namespace ERModsMerger.Core
             {
 
                 List<string> modsDirectories = dirs.OrderByDescending(q => q).ToList();
+                var dispatcher = new MergeableFilesDispatcher();
 
                 //if mods are present in config with special order, change modsDirectories
+                List<string> ignoredFiles = new List<string>();
                 if (ModsMergerConfig.LoadedConfig.CurrentProfile.Mods.Count > 0)
                 {
-                    modsDirectories = new List<string>();
-                    ModsMergerConfig.LoadedConfig.CurrentProfile.Mods.FindAll(x => x.Enabled && !x.IsDllMod).ForEach((x) => { modsDirectories.Insert(0,x.DirPath); });
+                    //reverse the mod list to comply with priority order and exclude dll mods for the merge
+                    List<ModConfig> mods = new List<ModConfig>();
+                    foreach (var mod in ModsMergerConfig.LoadedConfig.CurrentProfile.Mods.FindAll(x=>x.Enabled && !x.IsDllMod))
+                        mods.Insert(0, mod);
+
+
+                    foreach (var mod in mods)
+                    {
+                        mod.ModFiles.ForEach(x => 
+                        { 
+                            if (x.Enabled && !x.IsDirectory) 
+                                dispatcher.AddFile(x.Path, x.ModRelativePath);
+                            else if(!x.Enabled && !x.IsDirectory)
+                                ignoredFiles.Add(x.Path);
+                        });
+                    }
+                }
+                else // console behavior // no profile set
+                {
+
+                    //Search all files in directories, add them to the dispatcher and then search which files are conflicting
+
+                    var allFiles = new List<string>();
+                    foreach (string modsDirectory in modsDirectories)
+                        Utils.FindAllFiles(modsDirectory, ref allFiles, true);
+
+
+                    foreach (string file in allFiles)
+                        dispatcher.AddFile(file);
                 }
 
 
-                //Search all files in directories, add them to the dispatcher and then search which files are conflicting
-                var dispatcher = new MergeableFilesDispatcher();
-                var allFiles = new List<string>();
-                foreach (string modsDirectory in modsDirectories)
-                    Utils.FindAllFiles(modsDirectory, ref allFiles, true);
-
-                //ignore individual files disabled by user
-                List<string>? ignoredFiles = null;
-                if (ModsMergerConfig.LoadedConfig.CurrentProfile.Mods.Count > 0)
-                {
-                    ignoredFiles = allFiles.FindAll((x) =>
-                        ModsMergerConfig.LoadedConfig.CurrentProfile.Mods.Count(y =>
-                            y.ModFiles.Count(z =>
-                                z.Path == x && !z.Enabled) > 0) > 0);
-
-                    allFiles.RemoveAll((x) =>
-                        ModsMergerConfig.LoadedConfig.CurrentProfile.Mods.Count(y=> 
-                            y.ModFiles.Count(z=> 
-                                z.Path == x && !z.Enabled) > 0) > 0);
-                }
-
-                foreach (string file in allFiles)
-                    dispatcher.AddFile(file);
+               
 
                 dispatcher.SearchForConflicts();
 
@@ -92,7 +95,7 @@ namespace ERModsMerger.Core
 
                         if (!answer)
                         {
-                            OnMergeFinish(true);
+                            OnMergeFinish(false);
                             return;
                         } 
                     }
@@ -120,6 +123,8 @@ namespace ERModsMerger.Core
             {
                 LOG.Log($"No mod folder(s) could be found in {config.CurrentProfile.ModsToMergeFolderPath}\n⚠ Verify if everything is placed well like in example.\n⚠ Relaunch and look at example to see expected folders placement.",
                     LOGTYPE.ERROR);
+
+                OnMergeFinish(false);
             }
 
             
@@ -135,7 +140,12 @@ namespace ERModsMerger.Core
         {
             if (MergeFinish != null)
             {
-                MergeFinish(true);
+                if(finished)
+                    LOG.Log("Merging Done!", LOGTYPE.SUCCESS);
+                else
+                    LOG.Log("Merging failed!", LOGTYPE.ERROR);
+
+                MergeFinish(finished);
             }
         }
 

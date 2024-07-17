@@ -17,6 +17,7 @@
                 <Button x:Name="BtnGamePath" HorizontalAlignment="Right" Width="30" Click="BtnGamePath_Click">...</Button>
             </Grid>
             <Button x:Name="BtnOpenAppData" Height="30" Click="BtnOpenAppData_Click">Open local folder</Button>
+            <Button x:Name="BtnReset" Height="30" Margin="0,15,0,0" Click="BtnReset_Click">Reset all and relaunch</Button>
             
             
         </StackPanel> 

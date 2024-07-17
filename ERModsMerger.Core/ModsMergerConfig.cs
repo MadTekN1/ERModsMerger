@@ -183,7 +183,7 @@ namespace ERModsMerger.Core
         private void SaveModEngineConfig()
         {
             // there is dll mods
-            if (LoadedConfig.CurrentProfile.Mods.Count(x => x.IsDllMod && x.Enabled) > 0)
+            if (LoadedConfig.CurrentProfile != null && LoadedConfig.CurrentProfile.Mods.Count(x => x.IsDllMod && x.Enabled) > 0)
             {
                 string modEngineConfig = File.ReadAllText(AppDataFolderPath + "\\ModEngine2\\config_eldenring_prog.toml");
                 var dllModsPaths = LoadedConfig.CurrentProfile.Mods.FindAll(x => x.IsDllMod && x.Enabled).Select(x => x.FilePath).ToList();
@@ -215,6 +215,8 @@ namespace ERModsMerger.Core
 
         public List<ModConfig> Mods { get; set; }
 
+        public bool Modified { get; set; }
+
         public ProfileConfig(string profileName, string profileDir)
         {
             ProfileName = profileName;
@@ -234,6 +236,7 @@ namespace ERModsMerger.Core
 
 
             Mods = new List<ModConfig>();
+            Modified = true;
         }
 
        
@@ -259,7 +262,7 @@ namespace ERModsMerger.Core
         public bool IsDllMod { get; set; }
         public string FilePath { get; set; }
 
-        public List<ModFileConfig> ModFiles { get; set; }
+        public List<FileToMerge> ModFiles { get; set; }
 
         public ModConfig(string name, string dirPath, bool enabled)
         {
@@ -267,22 +270,10 @@ namespace ERModsMerger.Core
             DirPath = dirPath;
             Enabled = enabled;
             Note = "";
-            ModFiles = new List<ModFileConfig>();
+            ModFiles = new List<FileToMerge>();
             IsDllMod = false;
             FilePath = "";
             ImportedFromAnotherProfile = false;
-        }
-    }
-
-    public class ModFileConfig
-    {
-        public string Path { get; set; }
-        public bool Enabled { get; set; }
-
-        public ModFileConfig(string path, bool enabled = true)
-        {
-            Path = path;
-            Enabled = enabled;
         }
     }
 }

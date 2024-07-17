@@ -47,16 +47,17 @@ namespace ERModsMerger.Core.Formats
             string status = "";
             string percent = "0";
 
+            var mainLog = LOG.Log("Merging Messages (MSGBND)");
 
             List<FMG> vanilla_fmgs = new List<FMG>();
             try
             {
                 vanilla_fmgs = new MSGBND_DCX("", files[0].ModRelativePath).FMGs;
-                LOG.Log($"Vanilla {files[0].ModRelativePath} - Loaded ✓\n");
+                mainLog.AddSubLog($"Vanilla {files[0].ModRelativePath} - Loaded ✓\n", LOGTYPE.SUCCESS);
             }
             catch (Exception e)
             {
-                LOG.Log($"Could not load vanilla msgbnd.dcx file\n", LOGTYPE.ERROR);
+                mainLog.AddSubLog($"Could not load vanilla msgbnd.dcx file\n", LOGTYPE.ERROR);
                 return;
             }
 
@@ -66,11 +67,11 @@ namespace ERModsMerger.Core.Formats
             {
                 base_msgbnd = new MSGBND_DCX(files[0].Path);
                 base_fmgs = base_msgbnd.FMGs;
-                LOG.Log($"Initial modded {files[0].ModRelativePath} - Loaded ✓\n");
+                mainLog.AddSubLog($"Initial modded {files[0].ModRelativePath} - Loaded ✓\n", LOGTYPE.SUCCESS);
             }
             catch (Exception e)
             {
-                LOG.Log($"Could not load {files[0].Path}\n", LOGTYPE.ERROR);
+                mainLog.AddSubLog($"Could not load {files[0].Path}\n", LOGTYPE.ERROR);
                 return;
             }
 
@@ -81,11 +82,11 @@ namespace ERModsMerger.Core.Formats
                 try
                 {
                     fmgs_to_merge = new MSGBND_DCX(files[f].Path).FMGs;
-                    LOG.Log($"Modded {files[0].ModRelativePath} - Loaded ✓\n");
+                    mainLog.AddSubLog($"Modded {files[0].ModRelativePath} - Loaded ✓", LOGTYPE.SUCCESS);
                 }
                 catch (Exception e)
                 {
-                    LOG.Log($"Could not load {files[f].Path}\n", LOGTYPE.ERROR);
+                    mainLog.AddSubLog($"Could not load {files[f].Path}", LOGTYPE.ERROR);
                     break;
                 }
 
@@ -127,7 +128,7 @@ namespace ERModsMerger.Core.Formats
                 catch (Exception)
                 {
 
-                    LOG.Log($"Error during merging {files[f].Path}\n", LOGTYPE.ERROR);
+                    mainLog.AddSubLog($"Error during merging {files[f].Path}", LOGTYPE.ERROR);
                 }
 
 
@@ -136,13 +137,14 @@ namespace ERModsMerger.Core.Formats
             try
             {
                 Console.WriteLine();
-                LOG.Log("Saving modded .msgbnd.dcx file to: " + ModsMergerConfig.LoadedConfig.CurrentProfile.MergedModsFolderPath + "\\" + files[0].ModRelativePath);
+                
                 base_msgbnd.Save(ModsMergerConfig.LoadedConfig.CurrentProfile.MergedModsFolderPath + "\\" + files[0].ModRelativePath);
+                mainLog.AddSubLog("Saving modded .msgbnd.dcx file to: " + ModsMergerConfig.LoadedConfig.CurrentProfile.MergedModsFolderPath + "\\" + files[0].ModRelativePath, LOGTYPE.SUCCESS);
 
             }
             catch (Exception)
             {
-                LOG.Log($"Error during saving modded .msgbnd.dcx file in {ModsMergerConfig.LoadedConfig.CurrentProfile.MergedModsFolderPath + "\\" + files[0].ModRelativePath}\n",
+                mainLog.AddSubLog($"Error during saving modded .msgbnd.dcx file in {ModsMergerConfig.LoadedConfig.CurrentProfile.MergedModsFolderPath + "\\" + files[0].ModRelativePath}",
                     LOGTYPE.ERROR);
 
             }

@@ -11,9 +11,9 @@ using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace ERModsMerger.Core
 {
-    internal class MergeableFilesDispatcher
+    public class MergeableFilesDispatcher
     {
-        List<FileToMerge> FilesToMerge {  get; set; }
+        public List<FileToMerge> FilesToMerge {  get; set; }
         public List<FileConflict> Conflicts { get; set; }
 
         public MergeableFilesDispatcher()
@@ -26,6 +26,13 @@ namespace ERModsMerger.Core
         {
             FilesToMerge.Add(new FileToMerge(path));
         }
+
+        public void AddFile(string path, string relativePath)
+        {
+            FilesToMerge.Add(new FileToMerge(path, relativePath));
+        }
+
+
 
         public void SearchForConflicts()
         {
@@ -54,23 +61,50 @@ namespace ERModsMerger.Core
         }
     }
 
-    internal class FileToMerge
+    public class FileToMerge
     {
         public string Path { get; set; }
         public string ModRelativePath { get; set; }
+        public bool IsDirectory { get; set; }
+        public bool Enabled { get; set; }
 
         public FileToMerge(string path)
         {
             Path = path;
             var splittedPath = Path.Split('\\');
 
-            var toSkip = ModsMergerConfig.LoadedConfig.CurrentProfile.ModsToMergeFolderPath.Split("\\").Count() +1;
+            int toSkip = ModsMergerConfig.LoadedConfig.CurrentProfile.ModsToMergeFolderPath.Split("\\").Count() +1;
 
             ModRelativePath = splittedPath.Skip(toSkip).ToString("\\");
+            Enabled = true;
+
+            FileAttributes attr = File.GetAttributes(path);
+            if (attr.HasFlag(FileAttributes.Directory))//is directory
+                IsDirectory = true;
+            else
+                IsDirectory = false;
+        }
+
+        public FileToMerge(string path, string relativePath)
+        { 
+            Path = path;
+            ModRelativePath = relativePath;
+            Enabled = true;
+
+            FileAttributes attr = File.GetAttributes(path);
+            if (attr.HasFlag(FileAttributes.Directory))//is directory
+                IsDirectory = true;
+            else
+                IsDirectory = false;
+        }
+
+        public FileToMerge()
+        {
+
         }
     }
 
-    internal class FileConflict
+    public class FileConflict
     {
         public List<FileToMerge> FilesToMerge { get; set; }
 

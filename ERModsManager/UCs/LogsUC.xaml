@@ -7,10 +7,18 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="400" Background="{DynamicResource WindowBrush}" BorderBrush="#33FFFFFF" BorderThickness="0,1,0,1">
     <Grid Margin="10">
-        <Label Foreground="{DynamicResource WindowTextBrush}" FontSize="17" FontWeight="Bold" Margin="0,0,0,20" FontFamily="Liberation Sans">Logs</Label>
-        <ScrollViewer x:Name="LogScrollViewer" Margin="5,42,0,0" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden">
-            <TextBlock  Foreground="{DynamicResource WindowTextBrush}" x:Name="TxtLogs" FontSize="12" FontFamily="Liberation Sans"></TextBlock>
+        <Label Foreground="{DynamicResource WindowTextBrush}" FontSize="17" FontWeight="Bold" Margin="0,0,0,20" FontFamily="Liberation Sans" VerticalAlignment="Top">Logs</Label>
+        <ScrollViewer x:Name="LogScrollViewer" Margin="0,42,0,0" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled">
+            <Grid>
+                <TextBlock Visibility="Hidden"  Foreground="{DynamicResource WindowTextBrush}" x:Name="TxtLogs" FontSize="12" FontFamily="Liberation Sans"></TextBlock>
+
+                <StackPanel x:Name="LogsStackPanel" Orientation="Vertical">
+                    
+                </StackPanel>
+                
+            </Grid>
         </ScrollViewer>
+        
         
        
     </Grid>

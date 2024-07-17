@@ -59,14 +59,15 @@ if (!File.Exists("ERModsMergerConfig\\config.json"))
     */
 
     ModsMergerConfig.SaveConfig();
+    config = ModsMergerConfig.LoadConfig();
 
-    //extract and unzip embedded res
-    EmbeddedResourcesExtractor.ExtractAssets();
+    config.CurrentProfile.ModsToMergeFolderPath = "ModsToMerge";
+    config.CurrentProfile.MergedModsFolderPath = "MergedMods";
 
-    Directory.CreateDirectory(config.ModsToMergeFolderPath);
+    Directory.CreateDirectory(config.CurrentProfile.ModsToMergeFolderPath);
 
-    if(!Directory.Exists(config.MergedModsFolderPath))
-        Directory.CreateDirectory(config.MergedModsFolderPath);
+    if(!Directory.Exists(config.CurrentProfile.MergedModsFolderPath))
+        Directory.CreateDirectory(config.CurrentProfile.MergedModsFolderPath);
 
     //FIRST LAUNCH END INIT
 
@@ -86,6 +87,7 @@ if (!File.Exists("ERModsMergerConfig\\config.json"))
     Console.ForegroundColor = ConsoleColor.DarkYellow;
     Console.WriteLine("Welcome to Elden Ring Mods Merger!\n");
     Console.ResetColor();
+    ModsMergerConfig.SaveConfig();
 }
 
 // config format error //reset it because the config should nnot be null at this point
@@ -121,7 +123,7 @@ DialConsole.WriteLine("You want an example I guess...");
 
 Console.ForegroundColor = ConsoleColor.Cyan;
 Console.WriteLine("\n\n<<NO I'M READY, MERGE MY SH*T! (Press 'M')>>\t\t<<YES I WANT AN EXAMPLE (Press 'E')>>");
-Console.WriteLine("<<MERGE WITH MANUAL CONFLICTS RESOLVING (Press 'A')>>");
+//Console.WriteLine("<<MERGE WITH MANUAL CONFLICTS RESOLVING (Press 'A')>>");
 Console.ResetColor();
 
 char keyPressed = Console.ReadKey(true).KeyChar;
@@ -182,7 +184,7 @@ if(keyPressed == 'e' || keyPressed == 'E')
         Thread.Sleep(500);
         DialConsole.WriteLine("\nLet's go! MERGE!\n\n");
         ModsMerger.StartMerge();
-        DialConsole.WriteLine("It's over, press any key to quit!");
+        DialConsole.WriteLine("\n\nIt's over, press any key to quit!");
         Console.ReadKey();
     }
     else
@@ -197,7 +199,7 @@ else if(keyPressed == 'm'|| keyPressed == 'M')
     Thread.Sleep(500);
     DialConsole.WriteLine("\nLet's go! MERGE!\n\n");
     ModsMerger.StartMerge();
-    DialConsole.WriteLine("It's over, press any key to quit!");
+    DialConsole.WriteLine("\n\nIt's over, press any key to quit!");
     Console.ReadKey();
 }
 else if (keyPressed == 'a' || keyPressed == 'A')
@@ -205,7 +207,7 @@ else if (keyPressed == 'a' || keyPressed == 'A')
     Thread.Sleep(500);
     DialConsole.WriteLine("\nLet's go! MANUAL MERGE!\n\n");
     ModsMerger.StartMerge(true);
-    DialConsole.WriteLine("It's over, press any key to quit!");
+    DialConsole.WriteLine("\n\nIt's over, press any key to quit!");
     Console.ReadKey();
 }
 else
@@ -219,8 +221,8 @@ void DisplayCurrentConfig()
 {
     DialConsole.WriteLine("Current config:");
     DialConsole.WriteLine("Game Path:\t\t" + ModsMergerConfig.LoadedConfig.GamePath);
-    DialConsole.WriteLine("Mods to be merged:\t" + ModsMergerConfig.LoadedConfig.ModsToMergeFolderPath);
-    DialConsole.WriteLine("Merged mods:\t\t" + ModsMergerConfig.LoadedConfig.MergedModsFolderPath);
+    DialConsole.WriteLine("Mods to be merged:\t" + ModsMergerConfig.LoadedConfig.CurrentProfile.ModsToMergeFolderPath);
+    DialConsole.WriteLine("Merged mods:\t\t" + ModsMergerConfig.LoadedConfig.CurrentProfile.MergedModsFolderPath);
     Console.WriteLine();
 
     DialConsole.Write("To modify the config, open and edit ");

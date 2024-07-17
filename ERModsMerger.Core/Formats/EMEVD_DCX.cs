@@ -35,15 +35,17 @@ namespace ERModsMerger.Core.Formats
             
             Console.WriteLine();
 
+            var mainLog = LOG.Log("Merging Events (EMEVD)");
+
             EMEVD? vanilla_emevd;
             try
             {
                 vanilla_emevd = new EMEVD_DCX("", files[0].ModRelativePath).Emevd;
-                LOG.Log($"Vanilla {files[0].ModRelativePath} - Loaded ✓\n");
+                mainLog.AddSubLog($"Vanilla {files[0].ModRelativePath} - Loaded ✓\n", LOGTYPE.SUCCESS);
             }
             catch (Exception e)
             {
-                LOG.Log($"Could not load vanilla event file\n", LOGTYPE.ERROR);
+                mainLog.AddSubLog($"Could not load vanilla event file\n", LOGTYPE.ERROR);
                 return;
             }
 
@@ -51,11 +53,11 @@ namespace ERModsMerger.Core.Formats
             try
             {
                 base_emevd = new EMEVD_DCX(files[0].Path).Emevd;
-                LOG.Log($"Initial modded event: {files[0].Path} - Loaded ✓\n");
+                mainLog.AddSubLog($"Initial modded event: {files[0].Path} - Loaded ✓\n", LOGTYPE.SUCCESS);
             }
             catch (Exception e)
             {
-                LOG.Log($"Could not load {files[0].Path}\n", LOGTYPE.ERROR);
+                mainLog.AddSubLog($"Could not load {files[0].Path}\n", LOGTYPE.ERROR);
                 return;
             }
 
@@ -67,11 +69,11 @@ namespace ERModsMerger.Core.Formats
                 try
                 {
                     emevd_to_merge = new EMEVD_DCX(files[f].Path).Emevd;
-                    LOG.Log($"Modded event: {files[f].Path} - Loaded ✓\n");
+                    mainLog.AddSubLog($"Modded event: {files[f].Path} - Loaded ✓\n");
                 }
                 catch (Exception e)
                 {
-                    LOG.Log($"Could not load {files[f].Path}\n", LOGTYPE.ERROR);
+                    mainLog.AddSubLog($"Could not load {files[f].Path}\n", LOGTYPE.ERROR);
                     break;
                 }
 
@@ -125,24 +127,24 @@ namespace ERModsMerger.Core.Formats
                 }
                 catch (Exception e)
                 {
-                    LOG.Log($"Error during merging {files[f].Path}\n", LOGTYPE.ERROR);
+                    mainLog.AddSubLog($"Error during merging {files[f].Path}\n", LOGTYPE.ERROR);
                 }
 
             }
 
-            LOG.Log($"Merging of {files[0].ModRelativePath} complete!");
+            mainLog.AddSubLog($"Merging of {files[0].ModRelativePath} complete!", LOGTYPE.SUCCESS);
 
 
             try
             {
                 Console.WriteLine();
-                LOG.Log("Saving modded event file to: " + ModsMergerConfig.LoadedConfig.CurrentProfile.MergedModsFolderPath + "\\" + files[0].ModRelativePath);
+                mainLog.AddSubLog("Saving modded event file to: " + ModsMergerConfig.LoadedConfig.CurrentProfile.MergedModsFolderPath + "\\" + files[0].ModRelativePath);
                 //write the file in the merged mods directory
                 base_emevd.Write(ModsMergerConfig.LoadedConfig.CurrentProfile.MergedModsFolderPath + "\\" + files[0].ModRelativePath);
             }
             catch (Exception e)
             {
-                LOG.Log($"Error during saving modded event in {ModsMergerConfig.LoadedConfig.CurrentProfile.MergedModsFolderPath + "\\" + files[0].ModRelativePath}\n",
+                mainLog.AddSubLog($"Error during saving modded event in {ModsMergerConfig.LoadedConfig.CurrentProfile.MergedModsFolderPath + "\\" + files[0].ModRelativePath}\n",
                     LOGTYPE.ERROR);
             }
 

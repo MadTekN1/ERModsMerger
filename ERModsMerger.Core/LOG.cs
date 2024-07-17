@@ -6,35 +6,133 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Win32;
+using Org.BouncyCastle.Crypto.Prng;
 
 namespace ERModsMerger.Core
 {
     public class LOG
     {
         DateTime Date;
-        public string Message { get; set; }
-        public LOGTYPE Type { get; set; }
-        public LOG(string logMessage, LOGTYPE logType = LOGTYPE.INFO)
-        {
-            Date = DateTime.Now;    
-            Message = logMessage.Replace("\r", "");
-            Type = logType;
-
-            switch (Type)
+        private string _message = "";
+        public string Message {
+            get {  return _message; } 
+            set 
             {
-                case LOGTYPE.INFO: Message = "🛈  " + logMessage; break;
-                case LOGTYPE.ERROR: Message = "🔴  " + logMessage; break;
-                case LOGTYPE.WARNING: Message = "⚠  " + logMessage; break;
-                case LOGTYPE.QUERY_USER__YES_NO: Message = "❔  " + logMessage; break;
+                _message = value;
+                OnPropertyChanged(this);
+            } 
+        }
+
+        private LOGTYPE _type = LOGTYPE.INFO;
+        public LOGTYPE Type
+        {
+            get { return _type; }
+            set
+            {
+                _type = value;
+                OnPropertyChanged(this);
+            }
+        }
+
+        private double _progress = 0;
+        public double Progress
+        {
+            get { return _progress; }
+            set
+            {
+                _progress = value;
+                OnPropertyChanged(this);
+            }
+        }
+
+
+        private List<LOG> SubLogs { get; set; }
+
+        public LOG(string logMessage, LOGTYPE logType = LOGTYPE.INFO, bool isSubLog = false)
+        {
+            if (ConsoleOutput)
+            {
+               
+                if (!isSubLog)
+                    Console.Write("\n\n");
+                else
+                    Console.Write("\n");
             }
 
-            OnNewLog(this);
+            Date = DateTime.Now;    
+            
+            Type = logType;
+            Progress = 0;
+            Message = logMessage.Replace("\r", "");
+            SubLogs = new List<LOG>();
+
+           
+
+            if(!isSubLog)
+                OnNewLog(this);
         }
+
+        public LOG AddSubLog(string message, LOGTYPE type = LOGTYPE.INFO)
+        {
+            var sublog = new LOG(message, type, true);
+            SubLogs.Add(sublog);
+            OnSubLogAdded(sublog);
+            return sublog;
+        }
+
+        public delegate void SubLogAddedEventHandler(LOG log);
+        public event SubLogAddedEventHandler? SubLogAdded;
+
+        protected void OnSubLogAdded(LOG log)
+        {
+            if (SubLogAdded != null)
+            {
+                SubLogAdded(log);
+            }
+        }
+
+        public delegate void LogPropertyChangedEventHandler(LOG log);
+        public event LogPropertyChangedEventHandler? PropertyChanged;
+
+        protected void OnPropertyChanged(LOG log)
+        {
+            if(ConsoleOutput)
+            {
+                //clear the current console line
+                int currentLineCursor = Console.CursorTop;
+                Console.SetCursorPosition(0, Console.CursorTop);
+                Console.Write(new string(' ', Console.WindowWidth));
+                Console.SetCursorPosition(0, currentLineCursor);
+
+                string logMessage = log.Message;
+
+                switch (log.Type)
+                {
+                    case LOGTYPE.INFO: logMessage = "🛈  " + logMessage; break;
+                    case LOGTYPE.ERROR: logMessage = "🔴  " + logMessage; break;
+                    case LOGTYPE.WARNING: logMessage = "⚠  " + logMessage; break;
+                    case LOGTYPE.SUCCESS: logMessage = "✅  " + logMessage; break;
+                    case LOGTYPE.QUERY_USER__YES_NO: logMessage = "❔  " + logMessage; break;
+                }
+
+
+               
+                Console.Write("\r" + logMessage);
+            }
+
+
+
+
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(log);
+            }
+        }
+
 
         public delegate void NewLogEventHandler(
         NewLogEventArgs args);
-
-        public static event NewLogEventHandler NewLog;
+        public static event NewLogEventHandler? NewLog;
 
         protected static void OnNewLog(LOG log)
         {
@@ -52,15 +150,13 @@ namespace ERModsMerger.Core
 
         public static List<LOG> lOGs = new List<LOG>();
         
-        public static void Log(string logMessage, LOGTYPE logType = LOGTYPE.INFO)
+        public static LOG Log(string logMessage, LOGTYPE logType = LOGTYPE.INFO)
         {
-            lOGs.Add(new LOG(logMessage, logType));
-
-            if(ConsoleOutput && logType != LOGTYPE.QUERY_USER__YES_NO)
-            {
-                Console.WriteLine(lOGs.Last().Message);
-            }
+            var log = new LOG(logMessage, logType);
+            lOGs.Add(log);
+            return log;
         }
+
 
         public static bool QueryUserYesNoQuestion(string queryMessage)
         {
@@ -102,7 +198,8 @@ namespace ERModsMerger.Core
         ERROR = 0,
         INFO = 1,
         WARNING = 2,
-        QUERY_USER__YES_NO = 3,
+        SUCCESS = 3,
+        QUERY_USER__YES_NO = 4
     }
 
     public class NewLogEventArgs : EventArgs

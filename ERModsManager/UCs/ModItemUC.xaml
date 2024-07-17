@@ -9,7 +9,7 @@
     <Grid VerticalAlignment="Top">
         <Border BorderBrush="{DynamicResource WindowTextBrush}" BorderThickness="1" CornerRadius="4"/>
 
-        <CheckBox x:Name="CheckBoxEnableMod" ToolTip="Enable / Disable this mod" IsChecked="{Binding ModEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="5,10,0,10" Checked="CheckBoxEnableMod_Changed" Unchecked="CheckBoxEnableMod_Changed" VerticalAlignment="Top" />
+        <CheckBox x:Name="CheckBoxEnableMod" ToolTip="Enable / Disable this mod" IsChecked="{Binding ModEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="5,10,0,10" Click="CheckBoxEnableMod_Changed" VerticalAlignment="Top" />
 
         <Button x:Name="BtnDropDownExpand" HorizontalAlignment="Left" VerticalAlignment="Top" Width="21" Height="21" Margin="40,15,0,0" Click="BtnDropDownExpand_Click">
             <Image Source="{DynamicResource dropDownDrawingImage}" Margin="0"/>
