@@ -77,15 +77,15 @@ namespace ERModsMerger.Core
                 var unsuportedFilesConflicts = dispatcher.Conflicts.FindAll(x => !x.SupportedFormat);
                 if (unsuportedFilesConflicts.Count > 0)
                 {
-                    LOG.Log($"{unsuportedFilesConflicts.Count} unsupported conflict(s) found:\n",
+                    var log = LOG.Log($"{unsuportedFilesConflicts.Count} unsupported conflict(s) found:\n",
                         LOGTYPE.WARNING);
 
                     foreach (var conflict in unsuportedFilesConflicts)
                     {
-                        LOG.Log("- " + conflict.FilesToMerge[0].ModRelativePath + ":",
+                        log.AddSubLog("- " + conflict.FilesToMerge[0].ModRelativePath + ":",
                             LOGTYPE.WARNING);
-                        conflict.FilesToMerge.ForEach((x) => { Console.WriteLine("      - " + x.Path); });
-                        Console.WriteLine();
+                        //conflict.FilesToMerge.ForEach((x) => { Console.WriteLine("      - " + x.Path); });
+                        //Console.WriteLine();
                     }
                         
 
